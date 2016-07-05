@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>37bdb0dc-c858-4830-9dc1-d17d9899fe02</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{cca84bb9-87c1-4edc-b1de-b752769cbf4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{fe080608-6853-43ff-b2d5-d6306cdb25b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenCv">
+      <UniqueIdentifier>{96495b57-f5d1-4756-a724-1645bf35e2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenCv\Debug">
+      <UniqueIdentifier>{7e02bf79-9f47-499d-9b76-7041eea57f52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\TaskBase">
+      <UniqueIdentifier>{8e48f7b8-36b8-46ed-8476-416418a402a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parts">
+      <UniqueIdentifier>{9b3d3f31-d351-42df-ae2e-ce6932a036b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parts\Motor">
+      <UniqueIdentifier>{9629dfb8-7fac-49f5-b844-e97d56989e63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="MainPage.xaml.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Source\Framework\TaskBase.cpp">
+      <Filter>Framework\TaskBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Motor\Motor.cpp">
+      <Filter>Parts\Motor</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="App.xaml.h" />
+    <ClInclude Include="MainPage.xaml.h" />
+    <ClInclude Include="Source\Framework\TaskBase.h">
+      <Filter>Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Motor\Motor.h">
+      <Filter>Parts\Motor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ARC2016_TemporaryKey.pfx" />
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_calib3d300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_core300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_features2d300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_flann300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_imgcodecs300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_imgproc300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_ml300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_objdetect300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_photo300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_shape300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_stitching300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_video300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_videoio300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_videostab300d.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+    <None Include="..\..\..\OpenCV\opencv-vs2015-samples\vs2015\WS\10.0\ARM\bin\Debug\opencv_winrt.dll">
+      <Filter>OpenCv\Debug</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainPage.xaml" />
+  </ItemGroup>
+</Project>
