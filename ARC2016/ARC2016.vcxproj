@@ -154,7 +154,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="Source\Common.h" />
-    <ClInclude Include="Source\Framework\TaskBase.h" />
+    <ClInclude Include="Source\Framework\TaskChain.h" />
+    <ClInclude Include="Source\Framework\ITaskControlable.h" />
+    <ClInclude Include="Source\Framework\LoopTaskBase.h" />
+    <ClInclude Include="Source\Framework\SingleTaskBase.h" />
     <ClInclude Include="Source\Motor\Motor.h" />
   </ItemGroup>
   <ItemGroup>
@@ -240,7 +243,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Framework\TaskBase.cpp" />
+    <ClCompile Include="Source\Framework\TaskChain.cpp" />
+    <ClCompile Include="Source\Framework\LoopTaskBase.cpp" />
+    <ClCompile Include="Source\Framework\SingleTaskBase.cpp" />
     <ClCompile Include="Source\Motor\Motor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

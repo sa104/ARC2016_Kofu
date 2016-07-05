@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Framework/TaskBase.h"
+#include "../Framework/LoopTaskBase.h"
 
 namespace ARC2016
 {
-	class Motor : public TaskBase
+	class Motor : public LoopTaskBase
 	{
 	public:
 

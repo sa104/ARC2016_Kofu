@@ -2,13 +2,13 @@
 #include <chrono>
 #include <thread>
 #include "Source/Common.h"
-#include "TaskBase.h"
+#include "LoopTaskBase.h"
 
 using namespace std;
 using namespace concurrency;
-using namespace ARC2016;
+using namespace ARC2016::Framework::TaskBase;
 
-TaskBase::TaskBase(string taskName, const long cycleMsec)
+LoopTaskBase::LoopTaskBase(string taskName, const long cycleMsec)
  : TASK_NAME(taskName)
  , PROC_CYCLE_MSEC(cycleMsec)
  , m_ProcResult(E_TASK_NOT_RUN)
@@ -16,12 +16,12 @@ TaskBase::TaskBase(string taskName, const long cycleMsec)
 	// nop.
 }
 
-TaskBase::~TaskBase()
+LoopTaskBase::~LoopTaskBase()
 {
 	// nop.
 }
 
-void TaskBase::Start()
+void LoopTaskBase::Start()
 {
 	if (IsRunning() == false)
 	{
@@ -30,7 +30,7 @@ void TaskBase::Start()
 	}
 }
 
-void TaskBase::Stop()
+void LoopTaskBase::Stop()
 {
 	if (IsRunning() == true)
 	{
@@ -39,12 +39,12 @@ void TaskBase::Stop()
 	}
 }
 
-TaskBase::TaskResultEnum TaskBase::GetResult()
+LoopTaskBase::TaskResultEnum LoopTaskBase::GetResult()
 {
 	return m_ProcResult;
 }
 
-bool TaskBase::IsRunning()
+bool LoopTaskBase::IsRunning()
 {
 	bool bRet = false;
 
@@ -58,7 +58,7 @@ bool TaskBase::IsRunning()
 	return (bRet);
 }
 
-Windows::Foundation::IAsyncOperation<int>^ TaskBase::taskProcedure()
+Windows::Foundation::IAsyncOperation<int>^ LoopTaskBase::taskProcedure()
 {
 	return create_async([this]()
 	{
@@ -67,7 +67,7 @@ Windows::Foundation::IAsyncOperation<int>^ TaskBase::taskProcedure()
 	});
 }
 
-void TaskBase::doProcedure()
+void LoopTaskBase::doProcedure()
 {
 	ResultEnum	result = E_RET_ABNORMAL;
 

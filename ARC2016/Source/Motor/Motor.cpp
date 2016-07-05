@@ -3,7 +3,7 @@
 
 using namespace ARC2016;
 
-Motor::Motor() : TaskBase("Motor", 1000)
+Motor::Motor() : LoopTaskBase("Motor", 1000)
 {
 	// nop.
 }
