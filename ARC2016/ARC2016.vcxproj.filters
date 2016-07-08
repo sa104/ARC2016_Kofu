@@ -26,6 +26,9 @@
     <Filter Include="Parts\Motor">
       <UniqueIdentifier>{9629dfb8-7fac-49f5-b844-e97d56989e63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{2755bfaf-0bb2-42a6-9e21-60cf2dbc64b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -45,6 +48,9 @@
     </ClCompile>
     <ClCompile Include="Source\Framework\TaskChain.cpp">
       <Filter>Framework\TaskBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera\Camera.cpp">
+      <Filter>Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="Source\Framework\TaskChain.h">
       <Filter>Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera\Camera.h">
+      <Filter>Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

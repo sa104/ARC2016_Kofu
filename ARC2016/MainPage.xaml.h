@@ -7,13 +7,6 @@
 
 #include "MainPage.g.h"
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/types_c.h>
-#include <opencv2/imgcodecs/imgcodecs.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/videoio/cap_winrt.hpp>
-
 namespace ARC2016
 {
 	/// <summary>
@@ -26,10 +19,10 @@ namespace ARC2016
 
 	private:
 
-		bool													m_MediaInitialized;
-		bool													m_CaptureDisplaied;
 		Platform::Agile<Windows::Media::Capture::MediaCapture>	m_MediaCapture;
 		Windows::UI::Xaml::DispatcherTimer^						m_CameraTimer;
+		int														m_PreviewWidth;
+		int														m_PreviewHeight;
 
 		void timer_Tick(Platform::Object^ sender, Platform::Object^ e);
 		void ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);

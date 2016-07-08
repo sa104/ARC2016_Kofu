@@ -153,6 +153,7 @@
     <ClInclude Include="MainPage.xaml.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="Source\Camera\Camera.h" />
     <ClInclude Include="Source\Common.h" />
     <ClInclude Include="Source\Framework\TaskChain.h" />
     <ClInclude Include="Source\Framework\ITaskControlable.h" />
@@ -243,6 +244,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Camera\Camera.cpp" />
     <ClCompile Include="Source\Framework\TaskChain.cpp" />
     <ClCompile Include="Source\Framework\LoopTaskBase.cpp" />
     <ClCompile Include="Source\Framework\SingleTaskBase.cpp" />

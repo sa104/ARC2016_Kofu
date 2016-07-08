@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <CaptureElement x:Name="ImgCamera" HorizontalAlignment="Left" Height="90" Margin="125,120,0,0" VerticalAlignment="Top" Width="172" Loaded="ImgCamera_Loaded"/>
-        <Image x:Name="ImgCapture" HorizontalAlignment="Left" Height="240" VerticalAlignment="Top" Width="320"/>
+        <CaptureElement x:Name="ImgCamera" HorizontalAlignment="Left" Height="480" Margin="10,508,0,0" VerticalAlignment="Top" Width="640" Loaded="ImgCamera_Loaded"/>
+        <Image x:Name="ImgCapture" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="640" Margin="10,0,0,0"/>
     </Grid>
 </Page>

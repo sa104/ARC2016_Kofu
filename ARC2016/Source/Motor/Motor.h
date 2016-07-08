@@ -4,7 +4,7 @@
 
 namespace ARC2016
 {
-	class Motor : public LoopTaskBase
+	class Motor : public ARC2016::Framework::TaskBase::LoopTaskBase
 	{
 	public:
 
