@@ -155,10 +155,10 @@
     </ClInclude>
     <ClInclude Include="Source\Camera\Camera.h" />
     <ClInclude Include="Source\Common.h" />
-    <ClInclude Include="Source\Framework\TaskChain.h" />
-    <ClInclude Include="Source\Framework\ITaskControlable.h" />
-    <ClInclude Include="Source\Framework\LoopTaskBase.h" />
-    <ClInclude Include="Source\Framework\SingleTaskBase.h" />
+    <ClInclude Include="Source\Framework\StopWatch\StopWatch.h" />
+    <ClInclude Include="Source\Framework\TaskBase\ITaskControlable.h" />
+    <ClInclude Include="Source\Framework\TaskBase\LoopTaskBase.h" />
+    <ClInclude Include="Source\Framework\TaskBase\SingleTaskBase.h" />
     <ClInclude Include="Source\Motor\Motor.h" />
     <ClInclude Include="Source\Serial\Serial.h" />
   </ItemGroup>
@@ -246,9 +246,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Camera\Camera.cpp" />
-    <ClCompile Include="Source\Framework\TaskChain.cpp" />
-    <ClCompile Include="Source\Framework\LoopTaskBase.cpp" />
-    <ClCompile Include="Source\Framework\SingleTaskBase.cpp" />
+    <ClCompile Include="Source\Framework\StopWatch\StopWatch.cpp" />
+    <ClCompile Include="Source\Framework\TaskBase\LoopTaskBase.cpp" />
+    <ClCompile Include="Source\Framework\TaskBase\SingleTaskBase.cpp" />
     <ClCompile Include="Source\Motor\Motor.cpp" />
     <ClCompile Include="Source\Serial\Serial.cpp" />
   </ItemGroup>

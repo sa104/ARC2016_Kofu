@@ -43,10 +43,11 @@ ResultEnum Motor::taskMain()
 
 	m_SerialDevice->Send(&buffer[0], sizeof(buffer));
 
-	char recvBuffer[10] = {0};
-	m_SerialDevice->Receive(&recvBuffer[0], sizeof(recvBuffer));
 
+//	char recvBuffer[10] = {0};
+//	m_SerialDevice->Receive(&recvBuffer[0], sizeof(recvBuffer));
 
+	
 
 	return E_RET_NORMAL;
 }

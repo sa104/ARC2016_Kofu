@@ -56,6 +56,7 @@ ResultEnum Serial::Send(char* const pBuffer, const long lSize)
 
 	task<size_t> asyncTask = create_task(m_Writer->StoreAsync());
 	asyncTask.wait();
+
 	if (asyncTask.get() < 0)
 	{
 		eRet = E_RET_ABNORMAL;
@@ -64,14 +65,6 @@ ResultEnum Serial::Send(char* const pBuffer, const long lSize)
 	{
 		eRet = E_RET_NORMAL;
 	}
-
-	//create_task(m_Writer->StoreAsync()).then([this](unsigned int bytesWritten)
-	//{
-	//	if (bytesWritten != 0)
-	//	{
-	//		m_SendComplete = true;
-	//	}
-	//});
 
 	return (eRet);
 }

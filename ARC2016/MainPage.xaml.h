@@ -30,8 +30,6 @@ namespace ARC2016
 
 		ARC2016::Motor*												m_Motor;
 
-
-
 		void timer_Tick(Platform::Object^ sender, Platform::Object^ e);
 		void ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 

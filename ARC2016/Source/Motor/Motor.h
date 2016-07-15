@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Framework/LoopTaskBase.h"
+#include "Source/Framework/TaskBase/LoopTaskBase.h"
 #include "Source/Serial/Serial.h"
 
 namespace ARC2016

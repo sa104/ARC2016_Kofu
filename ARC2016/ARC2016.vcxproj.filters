@@ -32,6 +32,9 @@
     <Filter Include="Serial">
       <UniqueIdentifier>{0e8aaf98-77f9-48a5-abff-f8a9dba91b1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\StopWatch">
+      <UniqueIdentifier>{04aec7eb-3ee0-4ec9-9fbe-2c40a056f144}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -43,20 +46,20 @@
     <ClCompile Include="Source\Motor\Motor.cpp">
       <Filter>Parts\Motor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\LoopTaskBase.cpp">
-      <Filter>Framework\TaskBase</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\SingleTaskBase.cpp">
-      <Filter>Framework\TaskBase</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Framework\TaskChain.cpp">
-      <Filter>Framework\TaskBase</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Camera\Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serial\Serial.cpp">
       <Filter>Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\StopWatch\StopWatch.cpp">
+      <Filter>Framework\StopWatch</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\TaskBase\LoopTaskBase.cpp">
+      <Filter>Framework\TaskBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\TaskBase\SingleTaskBase.cpp">
+      <Filter>Framework\TaskBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,23 +72,23 @@
     <ClInclude Include="Source\Motor\Motor.h">
       <Filter>Parts\Motor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\LoopTaskBase.h">
-      <Filter>Framework\TaskBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\SingleTaskBase.h">
-      <Filter>Framework\TaskBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\ITaskControlable.h">
-      <Filter>Framework\TaskBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\TaskChain.h">
-      <Filter>Framework\TaskBase</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Camera\Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serial\Serial.h">
       <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\TaskBase\ITaskControlable.h">
+      <Filter>Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\TaskBase\LoopTaskBase.h">
+      <Filter>Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\TaskBase\SingleTaskBase.h">
+      <Filter>Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\StopWatch\StopWatch.h">
+      <Filter>Framework\StopWatch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

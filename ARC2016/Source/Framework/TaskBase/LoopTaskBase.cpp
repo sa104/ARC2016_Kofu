@@ -2,11 +2,13 @@
 #include <chrono>
 #include <thread>
 #include "Source/Common.h"
+#include "Source/Framework/StopWatch/StopWatch.h"
 #include "LoopTaskBase.h"
 
 using namespace std;
 using namespace concurrency;
 using namespace ARC2016::Framework::TaskBase;
+using namespace ARC2016::Framework::Measure;
 
 LoopTaskBase::LoopTaskBase(string taskName, const long cycleMsec)
  : TASK_NAME(taskName)
@@ -70,6 +72,9 @@ Windows::Foundation::IAsyncOperation<int>^ LoopTaskBase::taskProcedure()
 void LoopTaskBase::doProcedure()
 {
 	ResultEnum	result = E_RET_ABNORMAL;
+	long		lSpan = 0;
+	long		lWaitTime = 0;
+	StopWatch	watch;
 
 
 	// タスク動作中
@@ -86,14 +91,23 @@ void LoopTaskBase::doProcedure()
 	// メインループ
 	while (m_TaskStop == false)
 	{
+		watch.Start();
 		result = taskMain();
+		watch.Stop();
+
 		if (result != E_RET_NORMAL)
 		{
 			m_ProcResult = E_TASK_ABNORMAL_END;
 			goto FINISH;
 		}
 		
-		this_thread::sleep_for(std::chrono::milliseconds(PROC_CYCLE_MSEC));
+		lWaitTime = PROC_CYCLE_MSEC - lSpan;
+		if (lWaitTime <= 0)
+		{
+			lWaitTime = 1;
+		}
+
+		this_thread::sleep_for(std::chrono::milliseconds(lWaitTime));
 	}
 
 	// 終了処理
