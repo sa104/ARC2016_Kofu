@@ -6,6 +6,7 @@
 #include "pch.h"
 #include "MainPage.xaml.h"
 #include "Source/Camera/Camera.h"
+#include "Source/Serial/Serial.h"
 
 using namespace ARC2016;
 
@@ -17,6 +18,7 @@ using namespace Windows::Foundation::Collections;
 using namespace Windows::Graphics::Imaging;
 using namespace Windows::Media;
 using namespace Windows::Media::Capture;
+using namespace Windows::Devices::SerialCommunication;
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Windows::UI::Xaml::Controls::Primitives;
@@ -25,6 +27,7 @@ using namespace Windows::UI::Xaml::Input;
 using namespace Windows::UI::Xaml::Media;
 using namespace Windows::UI::Xaml::Media::Imaging;
 using namespace Windows::UI::Xaml::Navigation;
+using namespace Windows::Storage::Streams;
 
 
 // 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 を参照してください
@@ -32,6 +35,8 @@ using namespace Windows::UI::Xaml::Navigation;
 MainPage::MainPage()
 {
 	InitializeComponent();
+
+	InitializeSerial();
 }
 
 void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
@@ -64,11 +69,37 @@ void ARC2016::MainPage::timer_Tick(Platform::Object^ sender, Platform::Object^ e
 {
 	m_CameraTimer->Stop();
 
-	VideoFrame^ videoFrame = ref new Windows::Media::VideoFrame(BitmapPixelFormat::Bgra8, m_PreviewWidth, m_PreviewHeight);
+	VideoFrame^ videoFrame = ref new VideoFrame(BitmapPixelFormat::Bgra8, m_PreviewWidth, m_PreviewHeight);
 	task<VideoFrame^> asyncTask = create_task(m_MediaCapture->GetPreviewFrameAsync(videoFrame));
 	asyncTask.then([this](VideoFrame^ currentFrame)
 	{
 		ImgCapture->Source = ConvertProc(currentFrame);
 		m_CameraTimer->Start();
+	});
+}
+
+void ARC2016::MainPage::InitializeSerial()
+{
+	Platform::String ^serialDevices_aqs = Windows::Devices::SerialCommunication::SerialDevice::GetDeviceSelector();
+
+	create_task(DeviceInformation::FindAllAsync(serialDevices_aqs)).then([this](DeviceInformationCollection ^serialDeviceCollection)
+	{
+		m_DeviceCollection = serialDeviceCollection;
+
+		unsigned int size = m_DeviceCollection->Size;
+		for (unsigned int i = 0; i < size; i++)
+		{
+			DeviceInformation^ info = m_DeviceCollection->GetAt(i);
+			std::wstring id(info->Id->Data());
+			if (id.find(L"FTDI") != std::wstring::npos)
+			{
+				m_MotorSerial = info;
+				Serial* dev = new Serial(m_MotorSerial);
+				dev->Initialize();
+				m_Motor = new Motor(dev);
+				m_Motor->Start();
+				break;
+			}
+		}
 	});
 }

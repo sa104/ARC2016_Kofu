@@ -160,6 +160,7 @@
     <ClInclude Include="Source\Framework\LoopTaskBase.h" />
     <ClInclude Include="Source\Framework\SingleTaskBase.h" />
     <ClInclude Include="Source\Motor\Motor.h" />
+    <ClInclude Include="Source\Serial\Serial.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -249,6 +250,7 @@
     <ClCompile Include="Source\Framework\LoopTaskBase.cpp" />
     <ClCompile Include="Source\Framework\SingleTaskBase.cpp" />
     <ClCompile Include="Source\Motor\Motor.cpp" />
+    <ClCompile Include="Source\Serial\Serial.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

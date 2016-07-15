@@ -29,6 +29,9 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{2755bfaf-0bb2-42a6-9e21-60cf2dbc64b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Serial">
+      <UniqueIdentifier>{0e8aaf98-77f9-48a5-abff-f8a9dba91b1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -51,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="Source\Camera\Camera.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serial\Serial.cpp">
+      <Filter>Serial</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="Source\Camera\Camera.h">
       <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serial\Serial.h">
+      <Filter>Serial</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
