@@ -5,14 +5,17 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
-#include "Source/Camera/Camera.h"
-#include "Source/Serial/Serial.h"
 
 using namespace ARC2016;
+using namespace ARC2016::Framework;
+using namespace ARC2016::Parts;
+using namespace ARC2016::Tasks;
 
 using namespace concurrency;
 using namespace Platform;
 using namespace Windows::Devices::Enumeration;
+using namespace Windows::Devices::Gpio;
+using namespace Windows::Devices::I2c;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Graphics::Imaging;
@@ -28,34 +31,60 @@ using namespace Windows::UI::Xaml::Media;
 using namespace Windows::UI::Xaml::Media::Imaging;
 using namespace Windows::UI::Xaml::Navigation;
 using namespace Windows::Storage::Streams;
-
+using namespace Windows::System;
 
 // 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 を参照してください
 
 MainPage::MainPage()
+ : m_GpioController(nullptr)
+ , m_SerialDeviceCollection(nullptr)
+ , m_I2cDeviceCollection(nullptr)
+ , m_CameraTimer(nullptr)
+ , m_MediaCapture(nullptr)
+ , m_SensorMonitor(nullptr)
+ , m_SensorTimer(nullptr)
+ , m_DataSenderSerial(nullptr)
+ , m_DataSender(nullptr)
 {
 	InitializeComponent();
-
-	InitializeSerial();
+	InitializeHardware();
 }
 
-void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+void ARC2016::MainPage::InitializeHardware()
+{
+	// GPIO
+	m_GpioController = GpioController::GetDefault();
+
+	// Serial
+	Platform::String ^serialAqs = SerialDevice::GetDeviceSelector();
+	create_task(DeviceInformation::FindAllAsync(serialAqs)).then([this](DeviceInformationCollection ^serialDeviceCollection)
+	{
+		m_SerialDeviceCollection = serialDeviceCollection;
+	});
+
+	// I2C
+	Platform::String^ i2cAqs = I2cDevice::GetDeviceSelector();
+	create_task(DeviceInformation::FindAllAsync(i2cAqs)).then([this](DeviceInformationCollection^ i2cDeviceCollection)
+	{
+		m_I2cDeviceCollection = i2cDeviceCollection;
+	});
+}
+
+void ARC2016::MainPage::InitializeCamera()
 {
 	m_MediaCapture = ref new MediaCapture();
 	
-	task<void> asyncTask = create_task(m_MediaCapture->InitializeAsync());
-	asyncTask.then([this](void)
+	create_task(m_MediaCapture->InitializeAsync()).then([this](void)
 	{
 		ImgCamera->Source = m_MediaCapture.Get();
-		task<void> asyncTask2 = create_task(m_MediaCapture->StartPreviewAsync());
-		asyncTask2.then([this](void)
+		create_task(m_MediaCapture->StartPreviewAsync()).then([this](void)
 		{
 			auto previewProperty = static_cast<MediaProperties::VideoEncodingProperties^>(m_MediaCapture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
 			m_PreviewWidth = (int)previewProperty->Width;
 			m_PreviewHeight = (int)previewProperty->Height;
 
 			m_CameraTimer = ref new DispatcherTimer();
-			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Tick);
+			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Camera);
 
 			TimeSpan t;
 			t.Duration = 10;
@@ -65,7 +94,166 @@ void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::
 	});
 }
 
-void ARC2016::MainPage::timer_Tick(Platform::Object^ sender, Platform::Object^ e)
+void ARC2016::MainPage::InitializeSensorMonitor()
+{
+	// 起動済み
+	if (m_SensorMonitor != nullptr)
+	{
+		return;
+	}
+
+	// 未オープン
+	if ((m_GpioController == nullptr) || (m_I2cDeviceCollection == nullptr))
+	{
+		return;
+	}
+
+	bool isSimulation = (bool)chkSensorSimulation->IsChecked->Value;
+
+	// 距離センサ：I2C
+	auto i2cDistanceSensorSettings = ref new I2cConnectionSettings(0x40);
+	i2cDistanceSensorSettings->BusSpeed = I2cBusSpeed::FastMode;
+	create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cDistanceSensorSettings)).then([this, isSimulation](I2cDevice^ distanceSensorDevice)
+	{
+		// ジャイロセンサ：I2C
+		auto i2cGyroSensorSettings = ref new I2cConnectionSettings(0x18);
+		i2cGyroSensorSettings->BusSpeed = I2cBusSpeed::FastMode;
+		create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cGyroSensorSettings)).then([this, isSimulation, distanceSensorDevice](I2cDevice^ gyroSensorDevice)
+		{
+			if (distanceSensorDevice == nullptr)
+			{
+				return;
+			}
+
+			if (gyroSensorDevice == nullptr)
+			{
+				return;
+			}
+
+			// GPIO
+			GpioPin^ sensor1Gpio = m_GpioController->OpenPin(18);
+			GpioPin^ sensor2Gpio = m_GpioController->OpenPin(17);
+			sensor1Gpio->SetDriveMode(GpioPinDriveMode::Output);
+			sensor2Gpio->SetDriveMode(GpioPinDriveMode::Output);
+
+			// インスタンス生成
+			DistanceSensor*	pDistanceSensor1 = nullptr;
+			DistanceSensor*	pDistanceSensor2 = nullptr;
+			GyroSensor* pGyroSensor = nullptr;
+			if (isSimulation == true)
+			{
+				pDistanceSensor1 = new DistanceSensorDummy(distanceSensorDevice, sensor1Gpio);
+				pDistanceSensor2 = new DistanceSensorDummy(distanceSensorDevice, sensor2Gpio);
+				pGyroSensor = new GyroSensorDummy(gyroSensorDevice);
+			}
+			else
+			{
+				pDistanceSensor1 = new DistanceSensor(distanceSensorDevice, sensor1Gpio);
+				pDistanceSensor2 = new DistanceSensor(distanceSensorDevice, sensor2Gpio);
+				pGyroSensor = new GyroSensor(gyroSensorDevice);
+			}
+
+			if ((pDistanceSensor1 == nullptr) || (pDistanceSensor2 == nullptr) || (pGyroSensor == nullptr))
+			{
+				if (pDistanceSensor1 != nullptr)
+				{
+					delete pDistanceSensor1;
+				}
+				if (pDistanceSensor2 != nullptr)
+				{
+					delete pDistanceSensor2;
+				}
+				if (pGyroSensor != nullptr)
+				{
+					delete pGyroSensor;
+				}
+
+				return;
+			}
+
+			// ジャイロセンサ―初期化
+			if (pGyroSensor->Initialize() != E_RET_NORMAL)
+			{
+				delete pDistanceSensor1;
+				delete pDistanceSensor2;
+				delete pGyroSensor;
+				return;
+			}
+
+			// 距離センサリスト作成
+			std::vector<DistanceSensor *> distanceSensorList;
+			distanceSensorList.push_back(pDistanceSensor1);
+			distanceSensorList.push_back(pDistanceSensor2);
+
+			// ジャイロセンサリスト作成
+			std::vector<GyroSensor *> gyroSensorList;
+			gyroSensorList.push_back(pGyroSensor);
+
+			// センサモニタータスク生成
+			SensorMonitor* pMonitor = new SensorMonitor(distanceSensorList, gyroSensorList);
+			if (pMonitor == nullptr)
+			{
+				delete pDistanceSensor1;
+				delete pDistanceSensor2;
+				delete pGyroSensor;
+				return;
+			}
+
+			// センサモニタータスク起動
+			m_SensorMonitor = pMonitor;
+			m_SensorMonitor->Start();
+		});
+	});
+}
+
+void ARC2016::MainPage::InitializeDataSender()
+{
+	m_DataSender = nullptr;
+	for (unsigned int i = 0; i < m_SerialDeviceCollection->Size; i++)
+	{
+		DeviceInformation^ info = m_SerialDeviceCollection->GetAt(i);
+		std::wstring id(info->Id->Data());
+		if (id.find(L"FTDI") != std::wstring::npos)
+		{
+			m_DataSenderSerial = info;
+			Serial* dev = new Serial(m_DataSenderSerial);
+			dev->Initialize();
+			m_DataSender = new DataSender(dev);
+			m_DataSender->Start();
+			break;
+		}
+	}
+}
+
+void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	InitializeCamera();
+
+	// 画面表示更新タイマ起動
+	m_SensorTimer = ref new DispatcherTimer();
+	m_SensorTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_SensorMonitor);
+
+	TimeSpan t;
+	t.Duration = 300;
+	m_SensorTimer->Interval = t;
+	m_SensorTimer->Start();
+}
+
+void ARC2016::MainPage::btnShutdown_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	// シャットダウン
+	TimeSpan t;
+	t.Duration = 0;
+	Windows::System::ShutdownKind kind = ShutdownKind::Shutdown;
+	Windows::System::ShutdownManager::BeginShutdown(kind, t);
+}
+
+void ARC2016::MainPage::btnSensor_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	InitializeSensorMonitor();
+}
+
+void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^ e)
 {
 	m_CameraTimer->Stop();
 
@@ -73,33 +261,37 @@ void ARC2016::MainPage::timer_Tick(Platform::Object^ sender, Platform::Object^ e
 	task<VideoFrame^> asyncTask = create_task(m_MediaCapture->GetPreviewFrameAsync(videoFrame));
 	asyncTask.then([this](VideoFrame^ currentFrame)
 	{
-		ImgCapture->Source = ConvertProc(currentFrame);
+		bool isChecked = (bool)ChkDisplay->IsChecked->Value;
+		if (isChecked == true)
+		{
+			ImgCapture->Source = ConvertProc(currentFrame, true);
+		}
+		else
+		{
+			ConvertProc(currentFrame, false);
+		}
+
 		m_CameraTimer->Start();
 	});
 }
 
-void ARC2016::MainPage::InitializeSerial()
+void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::Object^ e)
 {
-	Platform::String ^serialDevices_aqs = Windows::Devices::SerialCommunication::SerialDevice::GetDeviceSelector();
-
-	create_task(DeviceInformation::FindAllAsync(serialDevices_aqs)).then([this](DeviceInformationCollection ^serialDeviceCollection)
+	if (m_SensorMonitor != nullptr)
 	{
-		m_DeviceCollection = serialDeviceCollection;
+		std::vector<long>	distanceValue;
+		m_SensorMonitor->GetDistanceSensorValue(distanceValue);
 
-		unsigned int size = m_DeviceCollection->Size;
-		for (unsigned int i = 0; i < size; i++)
-		{
-			DeviceInformation^ info = m_DeviceCollection->GetAt(i);
-			std::wstring id(info->Id->Data());
-			if (id.find(L"FTDI") != std::wstring::npos)
-			{
-				m_MotorSerial = info;
-				Serial* dev = new Serial(m_MotorSerial);
-				dev->Initialize();
-				m_Motor = new Motor(dev);
-				m_Motor->Start();
-				break;
-			}
-		}
-	});
+		std::vector<GyroSensor::GyroDataStr> gyroValue;
+		m_SensorMonitor->GetGyroSensorValue(gyroValue);
+
+		txtDistance1->Text = distanceValue[0].ToString();
+		txtDistance2->Text = distanceValue[1].ToString();
+
+		txtAccelX->Text = gyroValue[0].AccelX.ToString();
+		txtAccelY->Text = gyroValue[0].AccelY.ToString();
+		txtAccelZ->Text = gyroValue[0].AccelZ.ToString();
+		txtAngleX->Text = gyroValue[0].AngleX.ToString();
+		txtAngleY->Text = gyroValue[0].AngleY.ToString();
+	}
 }

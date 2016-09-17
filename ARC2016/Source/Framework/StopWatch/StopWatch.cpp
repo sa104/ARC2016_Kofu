@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "StopWatch.h"
+#include "Source/Framework/StopWatch/StopWatch.h"
 
 using namespace ARC2016;
-using namespace ARC2016::Framework::Measure;
+using namespace ARC2016::Framework;
 using namespace std::chrono;
 
 StopWatch::StopWatch() : m_Running(false)

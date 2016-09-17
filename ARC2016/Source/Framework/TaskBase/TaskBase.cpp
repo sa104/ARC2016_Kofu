@@ -1,16 +1,15 @@
 #include "pch.h"
 #include <chrono>
 #include <thread>
-#include "Source/Common.h"
+#include "Source/Common/Common.h"
 #include "Source/Framework/StopWatch/StopWatch.h"
-#include "LoopTaskBase.h"
+#include "Source/Framework/TaskBase/TaskBase.h"
 
 using namespace std;
 using namespace concurrency;
-using namespace ARC2016::Framework::TaskBase;
-using namespace ARC2016::Framework::Measure;
+using namespace ARC2016::Framework;
 
-LoopTaskBase::LoopTaskBase(string taskName, const long cycleMsec)
+TaskBase::TaskBase(string taskName, const long cycleMsec)
  : TASK_NAME(taskName)
  , PROC_CYCLE_MSEC(cycleMsec)
  , m_ProcResult(E_TASK_NOT_RUN)
@@ -18,12 +17,12 @@ LoopTaskBase::LoopTaskBase(string taskName, const long cycleMsec)
 	// nop.
 }
 
-LoopTaskBase::~LoopTaskBase()
+TaskBase::~TaskBase()
 {
 	// nop.
 }
 
-void LoopTaskBase::Start()
+void TaskBase::Start()
 {
 	if (IsRunning() == false)
 	{
@@ -32,21 +31,20 @@ void LoopTaskBase::Start()
 	}
 }
 
-void LoopTaskBase::Stop()
+void TaskBase::Stop()
 {
 	if (IsRunning() == true)
 	{
 		m_TaskStop = true;
-		m_TaskObject.then([this](int){});
 	}
 }
 
-LoopTaskBase::TaskResultEnum LoopTaskBase::GetResult()
+TaskBase::TaskResultEnum TaskBase::GetResult()
 {
 	return m_ProcResult;
 }
 
-bool LoopTaskBase::IsRunning()
+bool TaskBase::IsRunning()
 {
 	bool bRet = false;
 
@@ -60,7 +58,7 @@ bool LoopTaskBase::IsRunning()
 	return (bRet);
 }
 
-Windows::Foundation::IAsyncOperation<int>^ LoopTaskBase::taskProcedure()
+Windows::Foundation::IAsyncOperation<int>^ TaskBase::taskProcedure()
 {
 	return create_async([this]()
 	{
@@ -69,7 +67,7 @@ Windows::Foundation::IAsyncOperation<int>^ LoopTaskBase::taskProcedure()
 	});
 }
 
-void LoopTaskBase::doProcedure()
+void TaskBase::doProcedure()
 {
 	ResultEnum	result = E_RET_ABNORMAL;
 	long		lSpan = 0;
@@ -85,6 +83,10 @@ void LoopTaskBase::doProcedure()
 	if (result != E_RET_NORMAL)
 	{
 		m_ProcResult = E_TASK_ABNORMAL_END;
+
+		// èIóπèàóùÇÕïKÇ∏çsÇ§
+		finalize();
+
 		goto FINISH;
 	}
 

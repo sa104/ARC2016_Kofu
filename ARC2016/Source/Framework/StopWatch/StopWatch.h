@@ -6,31 +6,28 @@ namespace ARC2016
 {
 	namespace Framework
 	{
-		namespace Measure
+		class StopWatch
 		{
-			class StopWatch
-			{
-			public:
+		public:
 
-				StopWatch();
-				virtual ~StopWatch();
+			StopWatch();
+			virtual ~StopWatch();
 
-				void Start();
-				void Stop();
-				bool IsRunning();
-				long GetStoppedTime();
-				long GetLapTime();
+			void Start();
+			void Stop();
+			bool IsRunning();
+			long GetStoppedTime();
+			long GetLapTime();
 
-			protected :
+		protected :
 
-			private :
+		private :
 
-				bool									m_Running;
-				std::chrono::system_clock::time_point	m_StartTime;
-				std::chrono::system_clock::time_point	m_EndTime;
+			bool									m_Running;
+			std::chrono::system_clock::time_point	m_StartTime;
+			std::chrono::system_clock::time_point	m_EndTime;
 
-			};
-		}
+		};
 	}
 }
 

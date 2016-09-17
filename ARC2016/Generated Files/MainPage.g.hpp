@@ -39,6 +39,65 @@ void ::ARC2016::MainPage::Connect(int __connectionId, ::Platform::Object^ __targ
                 this->ImgCapture = safe_cast<::Windows::UI::Xaml::Controls::Image^>(__target);
             }
             break;
+        case 3:
+            {
+                this->ChkDisplay = safe_cast<::Windows::UI::Xaml::Controls::CheckBox^>(__target);
+            }
+            break;
+        case 4:
+            {
+                this->btnShutdown = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->btnShutdown))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::ARC2016::MainPage::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::btnShutdown_Click);
+            }
+            break;
+        case 5:
+            {
+                this->txtDistance1 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 6:
+            {
+                this->txtDistance2 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 7:
+            {
+                this->btnSensor = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
+                (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->btnSensor))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::ARC2016::MainPage::*)
+                    (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::btnSensor_Click);
+            }
+            break;
+        case 8:
+            {
+                this->chkSensorSimulation = safe_cast<::Windows::UI::Xaml::Controls::CheckBox^>(__target);
+            }
+            break;
+        case 9:
+            {
+                this->txtAccelX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 10:
+            {
+                this->txtAccelY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 11:
+            {
+                this->txtAccelZ = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 12:
+            {
+                this->txtAngleX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 13:
+            {
+                this->txtAngleY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
     }
     _contentLoaded = true;
 }

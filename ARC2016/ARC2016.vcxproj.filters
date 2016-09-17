@@ -5,35 +5,50 @@
       <UniqueIdentifier>37bdb0dc-c858-4830-9dc1-d17d9899fe02</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{cca84bb9-87c1-4edc-b1de-b752769cbf4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Framework">
-      <UniqueIdentifier>{fe080608-6853-43ff-b2d5-d6306cdb25b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OpenCv">
       <UniqueIdentifier>{96495b57-f5d1-4756-a724-1645bf35e2fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="OpenCv\Debug">
       <UniqueIdentifier>{7e02bf79-9f47-499d-9b76-7041eea57f52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\TaskBase">
-      <UniqueIdentifier>{8e48f7b8-36b8-46ed-8476-416418a402a7}</UniqueIdentifier>
+    <Filter Include="Source">
+      <UniqueIdentifier>{74c33c19-c7c5-4374-bdad-7bb5d014f5f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Parts">
-      <UniqueIdentifier>{9b3d3f31-d351-42df-ae2e-ce6932a036b4}</UniqueIdentifier>
+    <Filter Include="Source\Parts">
+      <UniqueIdentifier>{fe080608-6853-43ff-b2d5-d6306cdb25b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Parts\Motor">
-      <UniqueIdentifier>{9629dfb8-7fac-49f5-b844-e97d56989e63}</UniqueIdentifier>
+    <Filter Include="Source\Parts\DistanceSensor">
+      <UniqueIdentifier>{c9772013-f2c2-4238-aee6-c8071eaa7068}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Camera">
+    <Filter Include="Source\Parts\GyroSensor">
+      <UniqueIdentifier>{341345d7-30b3-47b2-b01b-153d36fb965d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Tasks">
+      <UniqueIdentifier>{f0e8012a-a8a4-4271-8715-6e42c86b01a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Tasks\Camera">
       <UniqueIdentifier>{2755bfaf-0bb2-42a6-9e21-60cf2dbc64b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Serial">
+    <Filter Include="Source\Tasks\DataSender">
+      <UniqueIdentifier>{ebadf073-1058-45f8-9f21-8b9363fdcd35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework">
+      <UniqueIdentifier>{822aa811-5305-43c3-8c55-46d5507603a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\StopWatch">
+      <UniqueIdentifier>{04aec7eb-3ee0-4ec9-9fbe-2c40a056f144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\TaskBase">
+      <UniqueIdentifier>{8e48f7b8-36b8-46ed-8476-416418a402a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Framework\Serial">
       <UniqueIdentifier>{0e8aaf98-77f9-48a5-abff-f8a9dba91b1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\StopWatch">
-      <UniqueIdentifier>{04aec7eb-3ee0-4ec9-9fbe-2c40a056f144}</UniqueIdentifier>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{cca84bb9-87c1-4edc-b1de-b752769cbf4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Tasks\SensorMonitor">
+      <UniqueIdentifier>{11e7cc67-c8ae-45d6-89d7-d313d21fd25d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,52 +58,61 @@
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainPage.xaml.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Source\Motor\Motor.cpp">
-      <Filter>Parts\Motor</Filter>
+    <ClCompile Include="Source\Tasks\Camera\Camera.cpp">
+      <Filter>Source\Tasks\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Camera\Camera.cpp">
-      <Filter>Camera</Filter>
+    <ClCompile Include="Source\Tasks\DataSender\DataSender.cpp">
+      <Filter>Source\Tasks\DataSender</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serial\Serial.cpp">
-      <Filter>Serial</Filter>
+    <ClCompile Include="Source\Parts\DistanseSensor\DistanceSensor.cpp">
+      <Filter>Source\Parts\DistanceSensor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Parts\GyroSensor\GyroSensor.cpp">
+      <Filter>Source\Parts\GyroSensor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework\Serial\Serial.cpp">
+      <Filter>Source\Framework\Serial</Filter>
     </ClCompile>
     <ClCompile Include="Source\Framework\StopWatch\StopWatch.cpp">
-      <Filter>Framework\StopWatch</Filter>
+      <Filter>Source\Framework\StopWatch</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\TaskBase\LoopTaskBase.cpp">
-      <Filter>Framework\TaskBase</Filter>
+    <ClCompile Include="Source\Framework\TaskBase\TaskBase.cpp">
+      <Filter>Source\Framework\TaskBase</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Framework\TaskBase\SingleTaskBase.cpp">
-      <Filter>Framework\TaskBase</Filter>
+    <ClCompile Include="Source\Tasks\SensorMonitor\SensorMonitor.cpp">
+      <Filter>Source\Tasks\SensorMonitor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainPage.xaml.h" />
-    <ClInclude Include="Source\Common.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="Source\Common\Common.h">
+      <Filter>Source\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Motor\Motor.h">
-      <Filter>Parts\Motor</Filter>
+    <ClInclude Include="Source\Tasks\Camera\Camera.h">
+      <Filter>Source\Tasks\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Camera\Camera.h">
-      <Filter>Camera</Filter>
+    <ClInclude Include="Source\Tasks\DataSender\DataSender.h">
+      <Filter>Source\Tasks\DataSender</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Serial\Serial.h">
-      <Filter>Serial</Filter>
+    <ClInclude Include="Source\Parts\DistanseSensor\DistanceSensor.h">
+      <Filter>Source\Parts\DistanceSensor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\TaskBase\ITaskControlable.h">
-      <Filter>Framework\TaskBase</Filter>
+    <ClInclude Include="Source\Parts\GyroSensor\GyroSensor.h">
+      <Filter>Source\Parts\GyroSensor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Framework\TaskBase\LoopTaskBase.h">
-      <Filter>Framework\TaskBase</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Framework\TaskBase\SingleTaskBase.h">
-      <Filter>Framework\TaskBase</Filter>
+    <ClInclude Include="Source\Framework\Serial\Serial.h">
+      <Filter>Source\Framework\Serial</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework\StopWatch\StopWatch.h">
-      <Filter>Framework\StopWatch</Filter>
+      <Filter>Source\Framework\StopWatch</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework\TaskBase\TaskBase.h">
+      <Filter>Source\Framework\TaskBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Tasks\SensorMonitor\SensorMonitor.h">
+      <Filter>Source\Tasks\SensorMonitor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

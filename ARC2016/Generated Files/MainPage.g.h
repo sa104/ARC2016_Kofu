@@ -13,6 +13,9 @@ namespace Windows {
             namespace Controls {
                 ref class CaptureElement;
                 ref class Image;
+                ref class CheckBox;
+                ref class Button;
+                ref class TextBox;
             }
         }
     }
@@ -35,6 +38,17 @@ namespace ARC2016
     
         private: ::Windows::UI::Xaml::Controls::CaptureElement^ ImgCamera;
         private: ::Windows::UI::Xaml::Controls::Image^ ImgCapture;
+        private: ::Windows::UI::Xaml::Controls::CheckBox^ ChkDisplay;
+        private: ::Windows::UI::Xaml::Controls::Button^ btnShutdown;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistance1;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistance2;
+        private: ::Windows::UI::Xaml::Controls::Button^ btnSensor;
+        private: ::Windows::UI::Xaml::Controls::CheckBox^ chkSensorSimulation;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtAccelX;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtAccelY;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtAccelZ;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleX;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleY;
     };
 }
 

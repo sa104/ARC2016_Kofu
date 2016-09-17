@@ -82,6 +82,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$([Microsoft.Build.Utilities.ToolLocationHelper]::GetPlatformExtensionSDKLocation(`WindowsIoT, Version=10.0.10586.0`, $(TargetPlatformIdentifier), $(TargetPlatformVersion),  $(SDKReferenceDirectoryRoot), $(SDKExtensionDirectoryRoot), $(SDKReferenceRegistryRoot)))\DesignTime\Retail\x86\WindowsIoT.props" Condition="exists('$([Microsoft.Build.Utilities.ToolLocationHelper]::GetPlatformExtensionSDKLocation(`WindowsIoT, Version=10.0.10586.0`, $(TargetPlatformIdentifier), $(TargetPlatformVersion),  $(SDKReferenceDirectoryRoot), $(SDKExtensionDirectoryRoot), $(SDKReferenceRegistryRoot)))\DesignTime\Retail\x86\WindowsIoT.props')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -153,14 +154,15 @@
     <ClInclude Include="MainPage.xaml.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="Source\Camera\Camera.h" />
-    <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\Common\Common.h" />
+    <ClInclude Include="Source\Framework\Serial\Serial.h" />
     <ClInclude Include="Source\Framework\StopWatch\StopWatch.h" />
-    <ClInclude Include="Source\Framework\TaskBase\ITaskControlable.h" />
-    <ClInclude Include="Source\Framework\TaskBase\LoopTaskBase.h" />
-    <ClInclude Include="Source\Framework\TaskBase\SingleTaskBase.h" />
-    <ClInclude Include="Source\Motor\Motor.h" />
-    <ClInclude Include="Source\Serial\Serial.h" />
+    <ClInclude Include="Source\Framework\TaskBase\TaskBase.h" />
+    <ClInclude Include="Source\Parts\DistanseSensor\DistanceSensor.h" />
+    <ClInclude Include="Source\Parts\GyroSensor\GyroSensor.h" />
+    <ClInclude Include="Source\Tasks\Camera\Camera.h" />
+    <ClInclude Include="Source\Tasks\DataSender\DataSender.h" />
+    <ClInclude Include="Source\Tasks\SensorMonitor\SensorMonitor.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -245,12 +247,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Camera\Camera.cpp" />
+    <ClCompile Include="Source\Framework\Serial\Serial.cpp" />
     <ClCompile Include="Source\Framework\StopWatch\StopWatch.cpp" />
-    <ClCompile Include="Source\Framework\TaskBase\LoopTaskBase.cpp" />
-    <ClCompile Include="Source\Framework\TaskBase\SingleTaskBase.cpp" />
-    <ClCompile Include="Source\Motor\Motor.cpp" />
-    <ClCompile Include="Source\Serial\Serial.cpp" />
+    <ClCompile Include="Source\Framework\TaskBase\TaskBase.cpp" />
+    <ClCompile Include="Source\Parts\DistanseSensor\DistanceSensor.cpp" />
+    <ClCompile Include="Source\Parts\GyroSensor\GyroSensor.cpp" />
+    <ClCompile Include="Source\Tasks\Camera\Camera.cpp" />
+    <ClCompile Include="Source\Tasks\DataSender\DataSender.cpp" />
+    <ClCompile Include="Source\Tasks\SensorMonitor\SensorMonitor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.10586.0" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "Source/Serial/Serial.h"
+#include "Source/Framework/Serial/Serial.h"
 
 using namespace ARC2016;
+using namespace ARC2016::Framework;
 using namespace concurrency;
 using namespace Platform;
 using namespace Windows::Devices::Enumeration;
@@ -14,6 +15,21 @@ Serial::Serial(Windows::Devices::Enumeration::DeviceInformation^ device)
  , m_InitializeComplete(false)
 {
 	// nop.
+}
+
+Serial::~Serial()
+{
+	if (m_Reader != nullptr)
+	{
+		delete m_Reader;
+		m_Reader = nullptr;
+	}
+
+	if (m_Writer != nullptr)
+	{
+		delete m_Writer;
+		m_Writer = nullptr;
+	}
 }
 
 void Serial::Initialize()
@@ -55,16 +71,23 @@ ResultEnum Serial::Send(char* const pBuffer, const long lSize)
 	m_Writer->WriteBytes(ArrayReference<unsigned char>(p, lSize));
 
 	task<size_t> asyncTask = create_task(m_Writer->StoreAsync());
-	asyncTask.wait();
-
-	if (asyncTask.get() < 0)
+	try
+	{
+		asyncTask.wait();
+		if (asyncTask.get() < 0)
+		{
+			eRet = E_RET_ABNORMAL;
+		}
+		else
+		{
+			eRet = E_RET_NORMAL;
+		}
+	}
+	catch (...)
 	{
 		eRet = E_RET_ABNORMAL;
 	}
-	else
-	{
-		eRet = E_RET_NORMAL;
-	}
+
 
 	return (eRet);
 }
@@ -91,8 +114,6 @@ ResultEnum Serial::Receive(char* const pBuffer, const long lSize)
 
 		eRet = E_RET_NORMAL;
 	}
-
-
 
 
 	return (eRet);

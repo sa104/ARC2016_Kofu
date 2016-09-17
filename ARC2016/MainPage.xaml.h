@@ -6,7 +6,10 @@
 #pragma once
 
 #include "MainPage.g.h"
-#include "Source/Motor/Motor.h"
+#include "Source/Framework/Serial/Serial.h"
+#include "Source/Tasks/Camera/Camera.h"
+#include "Source/Tasks/SensorMonitor/SensorMonitor.h"
+#include "Source/Tasks/DataSender/DataSender.h"
 
 namespace ARC2016
 {
@@ -20,20 +23,36 @@ namespace ARC2016
 
 	private:
 
-		Platform::Agile<Windows::Media::Capture::MediaCapture>		m_MediaCapture;
-		Windows::UI::Xaml::DispatcherTimer^							m_CameraTimer;
+		// ハードウェア
+		Windows::Devices::Gpio::GpioController^						m_GpioController;
+		Windows::Devices::Enumeration::DeviceInformationCollection^	m_SerialDeviceCollection;
+		Windows::Devices::Enumeration::DeviceInformationCollection^	m_I2cDeviceCollection;
+
+		// カメラ
 		int															m_PreviewWidth;
 		int															m_PreviewHeight;
-		Windows::Devices::Enumeration::DeviceInformationCollection^	m_DeviceCollection;
-		Windows::Devices::Enumeration::DeviceInformation^			m_MotorSerial;
-		Windows::Devices::Enumeration::DeviceInformation^			m_PowerBoardSerial;
+		Windows::UI::Xaml::DispatcherTimer^							m_CameraTimer;
+		Platform::Agile<Windows::Media::Capture::MediaCapture>		m_MediaCapture;
+		
+		// センサモニター
+		ARC2016::Tasks::SensorMonitor*								m_SensorMonitor;
+		Windows::UI::Xaml::DispatcherTimer^							m_SensorTimer;
 
-		ARC2016::Motor*												m_Motor;
+		// データ更新タスク
+		Windows::Devices::Enumeration::DeviceInformation^			m_DataSenderSerial;
+		ARC2016::Tasks::DataSender*									m_DataSender;
 
-		void timer_Tick(Platform::Object^ sender, Platform::Object^ e);
+		void InitializeHardware();
+		void InitializeCamera();
+		void InitializeSensorMonitor();
+		void InitializeDataSender();
+
 		void ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 
-		void InitializeSerial();
+		void btnShutdown_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
+		void btnSensor_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 
+		void timer_Camera(Platform::Object^ sender, Platform::Object^ e);
+		void timer_SensorMonitor(Platform::Object^ sender, Platform::Object^ e);
 	};
 }
