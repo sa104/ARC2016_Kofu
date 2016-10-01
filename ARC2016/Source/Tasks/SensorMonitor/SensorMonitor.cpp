@@ -4,6 +4,7 @@
 using namespace ARC2016;
 using namespace ARC2016::Parts;
 using namespace ARC2016::Tasks;
+using namespace Windows::Storage;
 
 SensorMonitor::SensorMonitor(std::vector<DistanceSensor*> distanceDev, std::vector<GyroSensor *> gyroDev)
 : TaskBase("SensorMonitor", 100)
@@ -12,6 +13,9 @@ SensorMonitor::SensorMonitor(std::vector<DistanceSensor*> distanceDev, std::vect
 	{
 		m_DistanceSensor.push_back(*itr);
 		m_DistanceValue.push_back(0);
+		m_DistanceValue.push_back(0);
+
+		m_DistanceData.push_back(m_DistanceValue);
 	}
 
 	for (auto itr = gyroDev.begin(); itr != gyroDev.end(); ++itr)
@@ -26,6 +30,9 @@ SensorMonitor::SensorMonitor(std::vector<DistanceSensor*> distanceDev, std::vect
 		value.AngleY = 0.0;
 
 		m_GyroValue.push_back(value);
+
+		m_GyroData.push_back(m_GyroValue);
+
 	}
 }
 
@@ -71,6 +78,64 @@ ResultEnum SensorMonitor::taskMain()
 
 ResultEnum SensorMonitor::finalize()
 {
+	StorageFolder^ folder = ApplicationData::Current->LocalFolder;
+	StorageFile^ file = (StorageFile^)folder->CreateFileAsync("SensorLog.txt", CreationCollisionOption::ReplaceExisting);
+
+	
+	Streams::IRandomAccessStream^ stream = (Streams::IRandomAccessStream^)file->OpenAsync(FileAccessMode::ReadWrite);
+
+	try
+	{
+		Streams::IOutputStream^ outputStream = (Streams::IOutputStream^)stream->GetOutputStreamAt(0);
+		try
+		{
+			Streams::DataWriter^ dataWriter = ref new Streams::DataWriter(outputStream);
+
+			std::vector<std::vector<ARC2016::Parts::GyroSensor::GyroDataStr>>::iterator itGyro = m_GyroData.begin();
+			while (itGyro != m_GyroData.end())
+			{
+				std::vector<ARC2016::Parts::GyroSensor::GyroDataStr> data = *itGyro;
+
+				wchar_t info[100] = { 0 };
+				wchar_t formatStr[64] = L"Gyro  accelX=%s, accelY=%s, accelZ=%s, angleX=%lf, angleY=%lf \n";
+
+				swprintf(info, size_t(100), formatStr,
+					data[0].AccelX.ToString(), data[0].AccelY.ToString(), data[0].AccelZ.ToString(),
+					data[0].AngleX.ToString(), data[0].AngleY.ToString());
+
+				Platform::String^ str = ref new Platform::String(info);
+				dataWriter->WriteString(str);
+
+				++itGyro;
+			}
+
+			std::vector<std::vector<long>>::iterator itDis = m_DistanceData.begin();
+			while (itDis != m_DistanceData.end())
+			{
+				std::vector<long> data = *itDis;
+				wchar_t info[100] = { 0 };
+				wchar_t formatStr[64] = L"Distance  Data1=%s, Data2=%s \n";
+
+				swprintf(info, size_t(100), formatStr, data[0].ToString(), data[1].ToString());
+
+				Platform::String^ str = ref new Platform::String(info);
+				dataWriter->WriteString(str);
+
+				++itDis;
+			}
+
+			dataWriter->StoreAsync();
+		}
+		catch (...)
+		{
+
+		}
+	}
+	catch (...)
+	{
+
+	}
+
 	return E_RET_NORMAL;
 }
 
@@ -106,6 +171,7 @@ void SensorMonitor::readDistanceSensor()
 	}
 
 	m_DistanceValue = valueList;
+	m_DistanceData.push_back(valueList);
 }
 
 void SensorMonitor::readGyroSensor()
@@ -128,4 +194,5 @@ void SensorMonitor::readGyroSensor()
 	}
 
 	m_GyroValue = valueList;
+	m_GyroData.push_back(valueList);
 }

@@ -9,7 +9,13 @@ DataSender::DataSender(Serial* device)
  : TaskBase("DataSender", 100)
  , m_SerialDevice(device)
 {
-	// nop.
+	for (int i = 0; i < 10; i++)
+	{
+		m_HeartBeatSendBuffer[i] = 0;
+	}
+	m_SendFlag = HEARTBEAT_SEND_START;
+	m_MyHeartBeat = HEARTBEAT_OFF;
+	m_BoardHeartBeat = HEARTBEAT_OFF;
 }
 
 DataSender::~DataSender()
@@ -28,6 +34,14 @@ ResultEnum DataSender::initialize()
 
 ResultEnum DataSender::taskMain()
 {
+	// 差し当たりHEARTBEATだけ考える
+	sendData();
+	readData();
+
+
+
+
+
 	// データ収集
 
 
@@ -61,4 +75,38 @@ ResultEnum DataSender::taskMain()
 ResultEnum DataSender::finalize()
 {
 	return E_RET_NORMAL;
+}
+
+void DataSender::sendData()
+{
+	// 未送信状態 且つ 送信データがある場合のみ送信実施
+	if (m_SendFlag == HEARTBEAT_SEND_START && m_HeartBeatSendBuffer[0] != 0)
+	{
+		// データ送信
+		m_SerialDevice->Send(&m_HeartBeatSendBuffer[0], sizeof(m_HeartBeatSendBuffer));
+
+		// 送信したのでデータクリア
+		for (int count = 0; count < 10; ++count)
+
+		{
+			m_HeartBeatSendBuffer[count] = 0;
+		}
+
+		m_SendFlag = HEARTBEAT_SEND_END;
+	}
+}
+
+void DataSender::readData()
+{
+	if (m_SendFlag == HEARTBEAT_SEND_END)
+	{
+		// 受信前にバッファクリア
+		for (int count = 0; count < 10; ++count)
+		{
+			m_HeartBeatReceiveBuffer[count] = 0;
+		}
+
+		// データ受信
+		m_SerialDevice->Receive(&m_HeartBeatReceiveBuffer[0], sizeof(m_HeartBeatReceiveBuffer));
+	}
 }
