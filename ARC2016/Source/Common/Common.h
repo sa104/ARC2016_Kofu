@@ -8,3 +8,6 @@ namespace ARC2016
 		E_RET_ABNORMAL,
 	} ResultEnum;
 };
+
+#define SCREEN_WIDTH                (320)
+#define SCREEN_HEIGHT               (240)

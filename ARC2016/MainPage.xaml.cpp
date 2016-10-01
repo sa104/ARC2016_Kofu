@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
+#include "Source/Tasks/Camera/Camera.h"
 
 using namespace ARC2016;
 using namespace ARC2016::Framework;
@@ -80,6 +81,8 @@ void ARC2016::MainPage::InitializeCamera()
 		create_task(m_MediaCapture->StartPreviewAsync()).then([this](void)
 		{
 			auto previewProperty = static_cast<MediaProperties::VideoEncodingProperties^>(m_MediaCapture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
+			previewProperty->Width = SCREEN_WIDTH;
+			previewProperty->Height = SCREEN_HEIGHT;
 			m_PreviewWidth = (int)previewProperty->Width;
 			m_PreviewHeight = (int)previewProperty->Height;
 
