@@ -49,6 +49,7 @@ namespace ARC2016
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtAccelZ;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleX;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleY;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtBinaryThreshold;
     };
 }
 

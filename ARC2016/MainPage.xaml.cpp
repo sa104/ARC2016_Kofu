@@ -46,6 +46,7 @@ MainPage::MainPage()
  , m_SensorTimer(nullptr)
  , m_DataSenderSerial(nullptr)
  , m_DataSender(nullptr)
+ , m_MoveType(0)
 {
 	InitializeComponent();
 	InitializeHardware();
@@ -90,7 +91,7 @@ void ARC2016::MainPage::InitializeCamera()
 			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Camera);
 
 			TimeSpan t;
-			t.Duration = 10;
+			t.Duration = CAMERRA_DURATION;
 			m_CameraTimer->Interval = t;
 			m_CameraTimer->Start();
 		});
@@ -237,7 +238,7 @@ void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::
 	m_SensorTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_SensorMonitor);
 
 	TimeSpan t;
-	t.Duration = 300;
+	t.Duration = 10;
 	m_SensorTimer->Interval = t;
 	m_SensorTimer->Start();
 }
@@ -259,11 +260,22 @@ void ARC2016::MainPage::btnSensor_Click(Platform::Object^ sender, Windows::UI::X
 void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^ e)
 {
 	m_CameraTimer->Stop();
+	Sleep(100);
 
 	VideoFrame^ videoFrame = ref new VideoFrame(BitmapPixelFormat::Bgra8, m_PreviewWidth, m_PreviewHeight);
 	task<VideoFrame^> asyncTask = create_task(m_MediaCapture->GetPreviewFrameAsync(videoFrame));
 	asyncTask.then([this](VideoFrame^ currentFrame)
 	{
+		// Platform::Stringへ直接代入
+		Platform::String^ str1 = txtBinaryThreshold->Text;
+		if (str1 != "")
+		{ 
+			// String⇒wstring
+			std::wstring    ws1(str1->Data());
+
+			long lData = std::stol(ws1);
+		}
+
 		bool isChecked = (bool)ChkDisplay->IsChecked->Value;
 		if (isChecked == true)
 		{
@@ -273,9 +285,11 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 		{
 			ConvertProc(currentFrame, false);
 		}
+		m_MoveType = GetMoveType();
 
 		m_CameraTimer->Start();
 	});
+
 }
 
 void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::Object^ e)

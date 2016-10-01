@@ -41,6 +41,8 @@ float           m_CameraVerticalAngleMax;
 MoveTypeEnum    m_BeforeMoveType;
 bool            m_GoalDetect;
 
+MoveTypeEnum	m_MoveType;
+
 enum
 {
 	E_IMAGE_ORIGINAL = 0x00,
@@ -702,6 +704,12 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 	switch (eMoveType)
 	{
 	case PATTERN_FRONT:
+	case PATTERN_FRONT_LEFT_15:
+	case PATTERN_FRONT_LEFT_30:
+	case PATTERN_FRONT_LEFT_45:
+	case PATTERN_FRONT_RIGHT_15:
+	case PATTERN_FRONT_RIGHT_30:
+	case PATTERN_FRONT_RIGHT_45:
 		putText(m_Image_Original, "^^^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
 	case PATTERN_TURN_LEFT_90:
@@ -710,24 +718,43 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 	case PATTERN_TURN_RIGHT_90:
 		putText(m_Image_Original, "Corner[RIGHT]", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
-	case PATTERN_FRONT_LEFT_15:
-		putText(m_Image_Original, "^^^<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
-	case PATTERN_FRONT_LEFT_30:
-		putText(m_Image_Original, "^^^<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
-	case PATTERN_FRONT_LEFT_45:
-		putText(m_Image_Original, "^^^<<<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
-	case PATTERN_FRONT_RIGHT_15:
-		putText(m_Image_Original, "^^^>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
-	case PATTERN_FRONT_RIGHT_30:
-		putText(m_Image_Original, "^^^>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
-	case PATTERN_FRONT_RIGHT_45:
-		putText(m_Image_Original, "^^^>>>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
-		break;
+
+	//case PATTERN_FRONT_LEFT_15:
+	//	putText(m_Image_Original, "^^^<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_LEFT_30:
+	//	putText(m_Image_Original, "^^^<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_LEFT_45:
+	//	putText(m_Image_Original, "^^^<<<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_15:
+	//	putText(m_Image_Original, "^^^>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_30:
+	//	putText(m_Image_Original, "^^^>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_45:
+	//	putText(m_Image_Original, "^^^>>>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_LEFT_15:
+	//	putText(m_Image_Original, "^^^<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_LEFT_30:
+	//	putText(m_Image_Original, "^^^<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_LEFT_45:
+	//	putText(m_Image_Original, "^^^<<<<<<^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_15:
+	//	putText(m_Image_Original, "^^^>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_30:
+	//	putText(m_Image_Original, "^^^>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
+	//case PATTERN_FRONT_RIGHT_45:
+	//	putText(m_Image_Original, "^^^>>>>>>^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
+	//	break;
 	default:
 		putText(m_Image_Original, " ", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
@@ -747,6 +774,7 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 	//}
 
 	m_LineInfo = sData;
+	m_MoveType = eMoveType;
 
 FINISH:
 
@@ -830,6 +858,12 @@ void ARC2016::ChangeBinaryThresh(const long lThresh)
 {
 	m_BinaryThresh = lThresh;
 	return;
+}
+
+long ARC2016::GetMoveType()
+{
+	long ret = (long)m_MoveType;
+	return(ret);
 }
 
 void ARC2016::ChangeConvertView()
