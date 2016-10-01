@@ -187,6 +187,7 @@ namespace ARC2016
 	long    GetMaxDeviation2();
 	long    GetMaxDeviation3();
 	long    GetCornerIndex();
+	long	GetMoveType();
 
 	S_MAP* getMapData(IplImage* sImage);
 	S_LINE_INFO* getLineData(S_MAP* sMap, MoveTypeEnum& eMoveType);

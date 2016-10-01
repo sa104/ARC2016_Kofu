@@ -98,6 +98,11 @@ void ::ARC2016::MainPage::Connect(int __connectionId, ::Platform::Object^ __targ
                 this->txtAngleY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
+        case 14:
+            {
+                this->txtBinaryThreshold = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
     }
     _contentLoaded = true;
 }
