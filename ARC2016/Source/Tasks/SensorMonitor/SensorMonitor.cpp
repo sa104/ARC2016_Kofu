@@ -4,6 +4,7 @@
 using namespace ARC2016;
 using namespace ARC2016::Parts;
 using namespace ARC2016::Tasks;
+using namespace concurrency;
 using namespace Windows::Storage;
 
 SensorMonitor::SensorMonitor(std::vector<DistanceSensor*> distanceDev, std::vector<GyroSensor *> gyroDev)
@@ -79,10 +80,30 @@ ResultEnum SensorMonitor::taskMain()
 ResultEnum SensorMonitor::finalize()
 {
 	StorageFolder^ folder = ApplicationData::Current->LocalFolder;
-	StorageFile^ file = (StorageFile^)folder->CreateFileAsync("SensorLog.txt", CreationCollisionOption::ReplaceExisting);
+	StorageFile^ file;
 
+	task<StorageFile^> asyncTask = create_task(folder->CreateFileAsync("SensorLog.txt", CreationCollisionOption::ReplaceExisting));
+	try
+	{
+		asyncTask.wait();
+		file = asyncTask.get();
+	}
+	catch (...)
+	{
+		/* nop */
+	}
 	
-	Streams::IRandomAccessStream^ stream = (Streams::IRandomAccessStream^)file->OpenAsync(FileAccessMode::ReadWrite);
+	Streams::IRandomAccessStream^ stream;
+	task<Streams::IRandomAccessStream^> asyncOpenTask = create_task(file->OpenAsync(FileAccessMode::ReadWrite));
+	try
+	{
+		asyncOpenTask.wait();
+		stream = (Streams::IRandomAccessStream^)asyncOpenTask.get();
+	}
+	catch (...)
+	{
+		/* nop */
+	}
 
 	try
 	{
@@ -124,7 +145,24 @@ ResultEnum SensorMonitor::finalize()
 				++itDis;
 			}
 
-			dataWriter->StoreAsync();
+			task<size_t> asyncWriteTask = create_task(dataWriter->StoreAsync());
+			try
+			{
+				asyncWriteTask.wait();
+				if (asyncWriteTask.get() < 0)
+				{
+					/* ファイル書き込み失敗 */
+				}
+				else
+				{
+					/* ファイル書き込み成功 */
+				}
+			}
+			catch (...)
+			{
+				/* nop */
+			}
+
 		}
 		catch (...)
 		{
