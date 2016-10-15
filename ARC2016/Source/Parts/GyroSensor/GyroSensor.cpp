@@ -27,10 +27,10 @@ ResultEnum GyroSensor::Initialize()
 	Platform::Array<byte>^	adcControl = ref new Platform::Array<byte>(2);
 
 	powerControl[0] = 0x20;		// ACCEL_REG_CONTROL1
-	powerControl[1] = 0x27;
+	powerControl[1] = 0x20;
 
-	adcControl[0] = 0x1F;		// ACCEL_REG_TEMP_CFG
-	adcControl[1] = 0x80;
+	adcControl[0] = 0x10;		// ACCEL_REG_TEMP_CFG
+	adcControl[1] = 0x20;
 
 	try
 	{
@@ -50,7 +50,7 @@ ResultEnum GyroSensor::Initialize()
 
 ResultEnum GyroSensor::Get(GyroDataStr& data)
 {
-	const int ACCEL_RES = 4095;								// The ADXL345 has 10 bit resolution giving 1024 unique values
+	const int ACCEL_RES = 65535;							// The ADXL345 has 16 bit resolution giving 1024 unique values
 	const int ACCEL_DYN_RANGE_G = 4;						// The ADXL345 had a total dynamic range of 8G, since we're configuring it to +-2G
 	const int UNITS_PER_G = ACCEL_RES / ACCEL_DYN_RANGE_G;  // Ratio of raw int values to G units
 
@@ -61,30 +61,55 @@ ResultEnum GyroSensor::Get(GyroDataStr& data)
 	double		accelX = 0.0;
 	double		accelY = 0.0;
 	double		accelZ = 0.0;
-	byte		rawData[2] = { 0 };
+	Platform::Array<byte>^	command = ref new Platform::Array<byte>(1);
+	Platform::Array<byte>^	rawData = ref new Platform::Array<byte>(6);
 
+	command[0] = 0x28;
 
 	// ÉfÅ[É^éÊìæ
-	readData(0x28, rawData[0]);		// ACCEL_REG_X_L
-	readData(0x29, rawData[1]);		// ACCEL_REG_X_H
-	rawX = rawData[1];
-	rawX <<= 8;
-	rawX += rawData[0];
-	rawX >>= 4;
+	try
+	{
+		m_I2cDevice->WriteRead(command, rawData);
+	}
+	catch (...)
+	{
+		return E_RET_NORMAL;
+	}
 
-	readData(0x2A, rawData[0]);		// ACCEL_REG_Y_L
-	readData(0x2B, rawData[1]);		// ACCEL_REG_Y_H
-	rawY = rawData[1];
+	byte data1;
+
+	if (rawData[0] > 128)
+	{
+		data1 = 128 - rawData[0];
+	}
+	else
+	{
+		data1 = rawData[0];
+	}
+	rawX = data1 << 8;
+	rawX += rawData[1];
+
+	if (rawData[2] > 128)
+	{
+		rawY = 128 - rawData[2];
+	}
+	else
+	{
+		rawY = rawData[2];
+	}
 	rawY <<= 8;
-	rawY += rawData[0];
-	rawY >>= 4;
+	rawY += rawData[3];
 
-	readData(0x2C, rawData[0]);		// ACCEL_REG_Z_L
-	readData(0x2D, rawData[1]);		// ACCEL_REG_Z_H
-	rawZ = rawData[1];
+	if (rawData[4] > 128)
+	{
+		rawZ = 128 - rawData[4];
+	}
+	else
+	{
+		rawZ = rawData[4];
+	}
 	rawZ <<= 8;
-	rawZ += rawData[0];
-	rawZ >>= 4;
+	rawZ += rawData[5];
 
 	// In order to get the raw 16-bit data values, we need to concatenate two 8-bit bytes from the I2C read for each axis.
 	// We accomplish this by using the BitConverter class.

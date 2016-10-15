@@ -120,7 +120,7 @@ void ARC2016::MainPage::InitializeSensorMonitor()
 	create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cDistanceSensorSettings)).then([this, isSimulation](I2cDevice^ distanceSensorDevice)
 	{
 		// ジャイロセンサ：I2C
-		auto i2cGyroSensorSettings = ref new I2cConnectionSettings(0x18);
+		auto i2cGyroSensorSettings = ref new I2cConnectionSettings(0x6B);
 		i2cGyroSensorSettings->BusSpeed = I2cBusSpeed::FastMode;
 		create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cGyroSensorSettings)).then([this, isSimulation, distanceSensorDevice](I2cDevice^ gyroSensorDevice)
 		{
@@ -267,14 +267,17 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 	asyncTask.then([this](VideoFrame^ currentFrame)
 	{
 		// Platform::Stringへ直接代入
+		long lData = 0;
 		Platform::String^ str1 = txtBinaryThreshold->Text;
 		if (str1 != "")
 		{ 
 			// String⇒wstring
 			std::wstring    ws1(str1->Data());
 
-			long lData = std::stol(ws1);
+			lData = std::stol(ws1);
 		}
+
+		ChangeBinaryThresh(lData);
 
 		bool isChecked = (bool)ChkDisplay->IsChecked->Value;
 		if (isChecked == true)

@@ -108,8 +108,7 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 
 	// “ñ’l‰»
 	cv::Mat m_Image_Binary(wb->PixelHeight, wb->PixelWidth, CV_8UC4);
-	lBinaryThresh = 135;
-	threshold(m_Image_Gray, m_Image_Binary, lBinaryThresh, 255, CV_THRESH_BINARY);
+	threshold(m_Image_Gray, m_Image_Binary, m_BinaryThresh, 255, CV_THRESH_BINARY);
 
 	sImage = m_Image_Binary;
 	sMap = getMapData(&sImage);
@@ -423,12 +422,12 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 
 	E_CORNER_TYPE eCornerType = E_CORNER_NONE;
 
-	if ((100  > m_OnCount) ||
-		(2000 < m_OnCount))
-	{
-		eMoveType = PATTERN_MISSING;
-		sData.bLine = false;
-	}
+	//if ((100  > m_OnCount) ||
+	//	(2000 < m_OnCount))
+	//{
+	//	eMoveType = PATTERN_MISSING;
+	//	sData.bLine = false;
+	//}
 	if ((true == sData.bLine) && (0 != sData.lCornerCount))
 	{
 		if (1 == sData.lCornerCount)
@@ -713,9 +712,11 @@ WriteableBitmap^ ARC2016::ConvertProc(VideoFrame^ source, const bool isDisplay)
 		putText(m_Image_Original, "^^^^^", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
 	case PATTERN_TURN_LEFT_90:
+	case PATTERN_FRONT_LEFT_90:
 		putText(m_Image_Original, "Corner[LEFT]", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
 	case PATTERN_TURN_RIGHT_90:
+	case PATTERN_FRONT_RIGHT_90:
 		putText(m_Image_Original, "Corner[RIGHT]", cvPointStart, FONT_HERSHEY_SIMPLEX, 1.2, cvColor2, 2, CV_AA);
 		break;
 

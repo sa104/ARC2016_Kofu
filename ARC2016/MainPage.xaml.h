@@ -33,6 +33,7 @@ namespace ARC2016
 		int															m_PreviewHeight;
 		Windows::UI::Xaml::DispatcherTimer^							m_CameraTimer;
 		Platform::Agile<Windows::Media::Capture::MediaCapture>		m_MediaCapture;
+		long														m_MoveType;
 		
 		// センサモニター
 		ARC2016::Tasks::SensorMonitor*								m_SensorMonitor;
