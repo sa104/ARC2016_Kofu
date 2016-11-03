@@ -33,6 +33,9 @@ namespace ARC2016
 			char m_HeartBeatSendBuffer[10];		// 送信バッファ
 			char m_HeartBeatReceiveBuffer[10];	// 受信バッファ
 
+			char m_MotorMoveSendBuffer[10];
+			char m_MotorMoveReceiveBuffer[10];
+			bool m_IsMoveSetted;
 
 		protected :
 
@@ -47,8 +50,8 @@ namespace ARC2016
 			ARC2016::ResultEnum taskMain();
 			ARC2016::ResultEnum finalize();
 
-			void sendData();
-			void readData();
+			void sendData(char* sendBuffer);
+			void readData(char* receiveBuffer);
 		};
 	}
 }

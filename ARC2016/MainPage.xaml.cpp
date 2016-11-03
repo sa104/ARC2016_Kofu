@@ -57,19 +57,13 @@ void ARC2016::MainPage::InitializeHardware()
 	// GPIO
 	m_GpioController = GpioController::GetDefault();
 
-	// Serial
-	Platform::String ^serialAqs = SerialDevice::GetDeviceSelector();
-	create_task(DeviceInformation::FindAllAsync(serialAqs)).then([this](DeviceInformationCollection ^serialDeviceCollection)
-	{
-		m_SerialDeviceCollection = serialDeviceCollection;
-	});
-
 	// I2C
 	Platform::String^ i2cAqs = I2cDevice::GetDeviceSelector();
 	create_task(DeviceInformation::FindAllAsync(i2cAqs)).then([this](DeviceInformationCollection^ i2cDeviceCollection)
 	{
 		m_I2cDeviceCollection = i2cDeviceCollection;
 	});
+
 }
 
 void ARC2016::MainPage::InitializeCamera()
@@ -212,6 +206,11 @@ void ARC2016::MainPage::InitializeSensorMonitor()
 
 void ARC2016::MainPage::InitializeDataSender()
 {
+	if (m_SerialDeviceCollection == nullptr || m_DataSender != nullptr)
+	{
+		goto FINISH;
+	}
+
 	m_DataSender = nullptr;
 	for (unsigned int i = 0; i < m_SerialDeviceCollection->Size; i++)
 	{
@@ -227,15 +226,25 @@ void ARC2016::MainPage::InitializeDataSender()
 			break;
 		}
 	}
+
+FINISH:
+	return;
 }
 
 void ARC2016::MainPage::InitializeDecision()
 {
-	m_Decision = nullptr;
+	if (m_SensorMonitor == nullptr || m_DataSender == nullptr)
+	{
+		goto FINISH;
+	}
 
 	m_Decision = new Decision(m_SensorMonitor, m_DataSender);
 	m_Decision->Start();
+
+FINISH:
+	return;
 }
+
 
 void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
@@ -322,4 +331,17 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 		txtAngleX->Text = gyroValue[0].AngleX.ToString();
 		txtAngleY->Text = gyroValue[0].AngleY.ToString();
 	}
+
+	if (m_SerialDeviceCollection == nullptr)
+	{
+		// Serial
+		Platform::String ^serialAqs = SerialDevice::GetDeviceSelector();
+		create_task(DeviceInformation::FindAllAsync(serialAqs)).then([this](DeviceInformationCollection ^serialDeviceCollection)
+		{
+			m_SerialDeviceCollection = serialDeviceCollection;
+		});
+	}
+
+	InitializeDataSender();
+	InitializeDecision();
 }

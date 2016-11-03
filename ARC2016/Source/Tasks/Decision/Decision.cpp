@@ -141,6 +141,18 @@ void Decision::MoveTypeDecision()
 	E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
 
 	// Motorへ指示
+	switch (moveLineTrace)
+	{
+		case E_MOVE_STRAIGHT:
+			setFrontMoveCommand();
+			break;
+		case E_MOVE_TURNLEFT:
+			setLeftMoveCommand();
+			break;
+		case E_MOVE_TURNRIGHT:
+			setRightMoveCommand();
+			break;
+	}
 
 }
 
@@ -157,19 +169,15 @@ long Decision::ConversionLineTraceFlag(long flag)
 	case PATTERN_FRONT_LEFT_30:              // 前進＆左 30°
 	case PATTERN_FRONT_LEFT_45:              // 前進＆左 45°
 	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
-		retVal = E_MOVE_LEFT;
-		break;
-	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
-	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
-	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
-	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
-		retVal = E_MOVE_RIGHT;
-		break;
 	case PATTERN_TURN_LEFT_ONCE:             // 左旋回 単体 (15°)
 	case PATTERN_TURN_LEFT_45:               // 左旋回 45°
 	case PATTERN_TURN_LEFT_90:               // 左旋回 90°
 		retVal = E_MOVE_TURNLEFT;
 		break;
+	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
+	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
+	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
+	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
 	case PATTERN_TURN_RIGHT_ONCE:            // 右旋回 単体 (15°)
 	case PATTERN_TURN_RIGHT_45:              // 右旋回 45°
 	case PATTERN_TURN_RIGHT_90:              // 右旋回 90°
@@ -178,9 +186,8 @@ long Decision::ConversionLineTraceFlag(long flag)
 	case PATTERN_STOP:
 	case PATTERN_BACK:
 	case PATTERN_PUT:
-		retVal = E_MOVE_UNKNOWN;
-		break;
 	case PATTERN_MISSING:
+		retVal = E_MOVE_UNKNOWN;
 		break;
 
 	default:
@@ -338,4 +345,109 @@ E_GYRO_MODE_TYPE Decision::GyroCheck()
 	}
 
 	return (ret);
+}
+
+void Decision::setFrontMoveCommand()
+{
+	char sendBuffer[10] = { 0 };
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// モーション再生
+	sendBuffer[2] = BUFFER3_MOTION_PLAY;
+	// 前進
+	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+
+	// 左足 歩幅
+	sendBuffer[4] = LEFT_STRIDE(10);
+
+	// 右足 歩幅
+	sendBuffer[5] = RIGHT_STRIDE(10);
+
+	// 高さ
+	sendBuffer[6] = 80;
+
+	// 傾斜
+	sendBuffer[7] = 0;
+
+	// 速度
+	sendBuffer[8] = 255;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
+}
+
+void Decision::setRightMoveCommand()
+{
+	char sendBuffer[10] = { 0 };
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// モーション再生
+	sendBuffer[2] = BUFFER3_MOTION_PLAY;
+	// 前進
+	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+
+	// 左足 歩幅
+	sendBuffer[4] = LEFT_STRIDE(10);
+
+	// 右足 歩幅
+	sendBuffer[5] = RIGHT_STRIDE(1);
+
+	// 高さ
+	sendBuffer[6] = 80;
+
+	// 傾斜
+	sendBuffer[7] = 0;
+
+	// 速度
+	sendBuffer[8] = 255;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
+}
+
+void Decision::setLeftMoveCommand()
+{
+	char sendBuffer[10] = { 0 };
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// モーション再生
+	sendBuffer[2] = BUFFER3_MOTION_PLAY;
+	// 前進
+	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+
+	// 左足 歩幅
+	sendBuffer[4] = LEFT_STRIDE(1);
+
+	// 右足 歩幅
+	sendBuffer[5] = RIGHT_STRIDE(10);
+
+	// 高さ
+	sendBuffer[6] = 80;
+
+	// 傾斜
+	sendBuffer[7] = 0;
+
+	// 速度
+	sendBuffer[8] = 255;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
 }
