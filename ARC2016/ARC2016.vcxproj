@@ -162,6 +162,7 @@
     <ClInclude Include="Source\Parts\GyroSensor\GyroSensor.h" />
     <ClInclude Include="Source\Tasks\Camera\Camera.h" />
     <ClInclude Include="Source\Tasks\DataSender\DataSender.h" />
+    <ClInclude Include="Source\Tasks\Decision\Decision.h" />
     <ClInclude Include="Source\Tasks\SensorMonitor\SensorMonitor.h" />
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +255,7 @@
     <ClCompile Include="Source\Parts\GyroSensor\GyroSensor.cpp" />
     <ClCompile Include="Source\Tasks\Camera\Camera.cpp" />
     <ClCompile Include="Source\Tasks\DataSender\DataSender.cpp" />
+    <ClCompile Include="Source\Tasks\Decision\Decision.cpp" />
     <ClCompile Include="Source\Tasks\SensorMonitor\SensorMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,9 @@
     <Filter Include="Source\Tasks\SensorMonitor">
       <UniqueIdentifier>{11e7cc67-c8ae-45d6-89d7-d313d21fd25d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Tasks\Decision">
+      <UniqueIdentifier>{ce30ccee-3087-4bcf-a5a8-6c77bce6aeb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -82,6 +85,9 @@
     <ClCompile Include="Source\Tasks\SensorMonitor\SensorMonitor.cpp">
       <Filter>Source\Tasks\SensorMonitor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Tasks\Decision\Decision.cpp">
+      <Filter>Source\Tasks\Decision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -113,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="Source\Tasks\SensorMonitor\SensorMonitor.h">
       <Filter>Source\Tasks\SensorMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Tasks\Decision\Decision.h">
+      <Filter>Source\Tasks\Decision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

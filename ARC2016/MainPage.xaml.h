@@ -10,6 +10,7 @@
 #include "Source/Tasks/Camera/Camera.h"
 #include "Source/Tasks/SensorMonitor/SensorMonitor.h"
 #include "Source/Tasks/DataSender/DataSender.h"
+#include "Source/Tasks/Decision/Decision.h"
 
 namespace ARC2016
 {
@@ -43,10 +44,14 @@ namespace ARC2016
 		Windows::Devices::Enumeration::DeviceInformation^			m_DataSenderSerial;
 		ARC2016::Tasks::DataSender*									m_DataSender;
 
+		// 思考タスク
+		ARC2016::Tasks::Decision*									m_Decision;
+
 		void InitializeHardware();
 		void InitializeCamera();
 		void InitializeSensorMonitor();
 		void InitializeDataSender();
+		void InitializeDecision();
 
 		void ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 

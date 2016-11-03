@@ -229,6 +229,14 @@ void ARC2016::MainPage::InitializeDataSender()
 	}
 }
 
+void ARC2016::MainPage::InitializeDecision()
+{
+	m_Decision = nullptr;
+
+	m_Decision = new Decision(m_SensorMonitor, m_DataSender);
+	m_Decision->Start();
+}
+
 void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	InitializeCamera();
