@@ -50,6 +50,7 @@ MainPage::MainPage()
 {
 	InitializeComponent();
 	InitializeHardware();
+	InitializeSensorMonitor();
 }
 
 void ARC2016::MainPage::InitializeHardware()
@@ -206,7 +207,7 @@ void ARC2016::MainPage::InitializeSensorMonitor()
 
 void ARC2016::MainPage::InitializeDataSender()
 {
-	if (m_SerialDeviceCollection == nullptr || m_DataSender != nullptr)
+	if (m_SerialDeviceCollection == nullptr)
 	{
 		goto FINISH;
 	}
@@ -218,11 +219,19 @@ void ARC2016::MainPage::InitializeDataSender()
 		std::wstring id(info->Id->Data());
 		if (id.find(L"FTDI") != std::wstring::npos)
 		{
-			m_DataSenderSerial = info;
-			Serial* dev = new Serial(m_DataSenderSerial);
-			dev->Initialize();
-			m_DataSender = new DataSender(dev);
-			m_DataSender->Start();
+			if ((m_DataSender == nullptr) &&
+				(info != nullptr))
+			{ 
+				m_DataSenderSerial = info;
+				Serial* dev = new Serial(m_DataSenderSerial);
+				dev->Initialize();
+				m_DataSender = new DataSender(dev);
+			}
+
+			if (m_DataSender->IsRunning() == false)
+			{
+				m_DataSender->Start();
+			}
 			break;
 		}
 	}
@@ -233,7 +242,9 @@ FINISH:
 
 void ARC2016::MainPage::InitializeDecision()
 {
-	if (m_SensorMonitor == nullptr || m_DataSender == nullptr)
+	if (m_SensorMonitor == nullptr
+	|| m_DataSender == nullptr
+	|| m_Decision != nullptr)
 	{
 		goto FINISH;
 	}
@@ -277,7 +288,6 @@ void ARC2016::MainPage::btnSensor_Click(Platform::Object^ sender, Windows::UI::X
 void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^ e)
 {
 	m_CameraTimer->Stop();
-	Sleep(100);
 
 	VideoFrame^ videoFrame = ref new VideoFrame(BitmapPixelFormat::Bgra8, m_PreviewWidth, m_PreviewHeight);
 	task<VideoFrame^> asyncTask = create_task(m_MediaCapture->GetPreviewFrameAsync(videoFrame));
@@ -344,4 +354,22 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 
 	InitializeDataSender();
 	InitializeDecision();
+
+	if (m_DataSender != nullptr)
+	{
+		unsigned char sendBuffer[10] = { 0 };
+
+		sendBuffer[0] = BUFFER1_TOP_FRAME;
+		sendBuffer[1] = BUFFER2_SECOND_FRAME;
+		sendBuffer[2] = BUFFER3_MOTION_PLAY;
+		sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+		sendBuffer[4] = 36;
+		sendBuffer[5] = 36;
+		sendBuffer[6] = 85;
+		sendBuffer[7] = 0;
+		sendBuffer[8] = 26;
+		memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+	}
+
+
 }

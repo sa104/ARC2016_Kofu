@@ -30,11 +30,11 @@ namespace ARC2016
 			HeartBeatStatusEnum m_MyHeartBeat;		// ラズパイ川のハートビート ステータス
 			HeartBeatStatusEnum m_BoardHeartBeat;	// board側のハートビート ステータス
 
-			char m_HeartBeatSendBuffer[10];		// 送信バッファ
-			char m_HeartBeatReceiveBuffer[10];	// 受信バッファ
+			unsigned char m_HeartBeatSendBuffer[10];		// 送信バッファ
+			unsigned char m_HeartBeatReceiveBuffer[10];	// 受信バッファ
 
-			char m_MotorMoveSendBuffer[10];
-			char m_MotorMoveReceiveBuffer[10];
+			unsigned char m_MotorMoveSendBuffer[10];
+			unsigned char m_MotorMoveReceiveBuffer[10];
 			bool m_IsMoveSetted;
 
 		protected :
@@ -50,8 +50,8 @@ namespace ARC2016
 			ARC2016::ResultEnum taskMain();
 			ARC2016::ResultEnum finalize();
 
-			void sendData(char* sendBuffer);
-			void readData(char* receiveBuffer);
+			ARC2016::ResultEnum sendData(unsigned char *sendBuffer, const long size);
+			ARC2016::ResultEnum readData(unsigned char *receiveBuffer, const long size);
 		};
 	}
 }

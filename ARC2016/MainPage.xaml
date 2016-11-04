@@ -15,12 +15,12 @@
         <TextBox x:Name="txtDistance1" HorizontalAlignment="Left" Height="10" Margin="190,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtDistance2" HorizontalAlignment="Left" Height="10" Margin="190,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <Button x:Name="btnSensor" Content="Sensor" HorizontalAlignment="Left" Height="38" Margin="50,240,0,0" VerticalAlignment="Top" Width="112" Click="btnSensor_Click"/>
-        <CheckBox x:Name="chkSensorSimulation" Content="Simulation&#xD;&#xA;" HorizontalAlignment="Left" Height="19" Margin="50,280,0,0" VerticalAlignment="Top" Width="67" IsChecked="True"/>
+        <CheckBox x:Name="chkSensorSimulation" Content="Simulation&#xD;&#xA;" HorizontalAlignment="Left" Height="19" Margin="50,280,0,0" VerticalAlignment="Top" Width="67" IsChecked="False"/>
         <TextBox x:Name="txtAccelX" HorizontalAlignment="Left" Height="10" Margin="355,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAccelY" HorizontalAlignment="Left" Height="10" Margin="355,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAccelZ" HorizontalAlignment="Left" Height="10" Margin="355,320,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAngleX" HorizontalAlignment="Left" Height="10" Margin="491,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAngleY" HorizontalAlignment="Left" Height="10" Margin="491,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,100,0,0" TextWrapping="Wrap" Text="60" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,100,0,0" TextWrapping="Wrap" Text="125" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
     </Grid>
 </Page>

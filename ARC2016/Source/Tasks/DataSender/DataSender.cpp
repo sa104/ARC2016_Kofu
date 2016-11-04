@@ -36,11 +36,22 @@ ResultEnum DataSender::initialize()
 
 ResultEnum DataSender::taskMain()
 {
-	sendData(&m_HeartBeatSendBuffer[0]);
-	readData(&m_HeartBeatReceiveBuffer[0]);
+	ResultEnum result = E_RET_ABNORMAL;
 
-	sendData(&m_MotorMoveSendBuffer[0]);
-	readData(&m_MotorMoveReceiveBuffer[0]);
+	if (m_SerialDevice->m_InitializeComplete == false)
+	{
+		goto FINISH;
+	}
+
+	//sendData(&m_HeartBeatSendBuffer[0], sizeof(m_HeartBeatSendBuffer));
+
+	result = sendData(&m_MotorMoveSendBuffer[0], sizeof(m_MotorMoveSendBuffer));
+	if (result == E_RET_NORMAL)
+	{
+		//readData(&m_MotorMoveReceiveBuffer[0], 1);
+	}
+
+FINISH:
 
 	return E_RET_NORMAL;
 }
@@ -50,30 +61,49 @@ ResultEnum DataSender::finalize()
 	return E_RET_NORMAL;
 }
 
-void DataSender::sendData(char* sendBuffer)
+ResultEnum DataSender::sendData(unsigned char *sendBuffer, const long size)
 {
+	ResultEnum retVal = E_RET_ABNORMAL;
+	ResultEnum result = E_RET_ABNORMAL;
+
 	if (sendBuffer[0] != 0)
 	{
 		// データ送信
-		m_SerialDevice->Send(&sendBuffer[0], sizeof(sendBuffer));
-
-		// 送信したのでデータクリア
-		for (int count = 0; count < sizeof(sendBuffer); ++count)
-
+		result = m_SerialDevice->Send(&sendBuffer[0], size);
+		if (result == E_RET_NORMAL)
 		{
-			m_HeartBeatSendBuffer[count] = 0;
+			// 送信したのでデータクリア
+			for (int count = 0; count < size; ++count)
+
+			{
+				sendBuffer[count] = 0;
+			}
+		}
+		else
+		{
+			retVal = result;
+			goto FINISH;
 		}
 	}
+
+	retVal = E_RET_NORMAL;
+
+FINISH:
+	return retVal;
 }
 
-void DataSender::readData(char* receiveBuffer)
+ResultEnum DataSender::readData(unsigned char *receiveBuffer, const long size)
 {
+	ResultEnum retVal = E_RET_ABNORMAL;
+
 	// 受信前にバッファクリア
-	for (int count = 0; count < sizeof(receiveBuffer); ++count)
+	for (int count = 0; count < size; ++count)
 	{
 		receiveBuffer[count] = 0;
 	}
 
 	// データ受信
-	m_SerialDevice->Receive(&receiveBuffer[0], sizeof(receiveBuffer));
+	retVal = m_SerialDevice->Receive(&receiveBuffer[0], size);
+
+	return retVal;
 }

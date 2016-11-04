@@ -363,19 +363,19 @@ void Decision::setFrontMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// ¶‘« •à•
-	sendBuffer[4] = LEFT_STRIDE(10);
+	sendBuffer[4] = 36;
 
 	// ‰E‘« •à•
-	sendBuffer[5] = RIGHT_STRIDE(10);
+	sendBuffer[5] = 36;
 
 	// ‚‚³
-	sendBuffer[6] = 80;
+	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
 	sendBuffer[7] = 0;
 
 	// ‘¬“x
-	sendBuffer[8] = 255;
+	sendBuffer[8] = 13;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -398,19 +398,19 @@ void Decision::setRightMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// ¶‘« •à•
-	sendBuffer[4] = LEFT_STRIDE(10);
+	sendBuffer[4] = 36;
 
 	// ‰E‘« •à•
-	sendBuffer[5] = RIGHT_STRIDE(1);
+	sendBuffer[5] = 6;
 
 	// ‚‚³
-	sendBuffer[6] = 80;
+	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
 	sendBuffer[7] = 0;
 
 	// ‘¬“x
-	sendBuffer[8] = 255;
+	sendBuffer[8] = 13;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -433,19 +433,19 @@ void Decision::setLeftMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// ¶‘« •à•
-	sendBuffer[4] = LEFT_STRIDE(1);
+	sendBuffer[4] = 6;
 
 	// ‰E‘« •à•
-	sendBuffer[5] = RIGHT_STRIDE(10);
+	sendBuffer[5] = 36;
 
 	// ‚‚³
-	sendBuffer[6] = 80;
+	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
 	sendBuffer[7] = 0;
 
 	// ‘¬“x
-	sendBuffer[8] = 255;
+	sendBuffer[8] = 13;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 

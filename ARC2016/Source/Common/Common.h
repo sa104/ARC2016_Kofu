@@ -11,4 +11,4 @@ namespace ARC2016
 
 #define SCREEN_WIDTH                (320)
 #define SCREEN_HEIGHT               (240)
-#define CAMERRA_DURATION			(1000)
+#define CAMERRA_DURATION			(100)
