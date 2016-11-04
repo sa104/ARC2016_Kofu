@@ -50,6 +50,9 @@ namespace ARC2016
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleX;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtAngleY;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtBinaryThreshold;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceFrontJudgeData;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceSideJudgeData;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtGyroSlopeJudgeData;
     };
 }
 

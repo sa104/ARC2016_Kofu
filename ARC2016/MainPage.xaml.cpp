@@ -233,7 +233,7 @@ FINISH:
 
 void ARC2016::MainPage::InitializeDecision()
 {
-	if (m_SensorMonitor == nullptr || m_DataSender == nullptr)
+	if (m_SensorMonitor == nullptr || m_DataSender == nullptr || m_Decision != nullptr)
 	{
 		goto FINISH;
 	}
@@ -340,6 +340,48 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 		{
 			m_SerialDeviceCollection = serialDeviceCollection;
 		});
+	}
+
+	// ついでに距離センサ判定条件設定の取得も行う
+	// 10ms毎はやりすぎなので、1秒毎にする
+	if (m_Decision != nullptr)
+	{
+		if (m_ReadJudgeValueInterval >= 100)
+		{
+			m_ReadJudgeValueInterval = 0;
+
+			Platform::String^ str = txtDistanceFrontJudgeData->Text;
+			if (str != "")
+			{
+				// String⇒wstring
+				std::wstring    ws(str->Data());
+				// wstring⇒Long
+				m_Decision->m_FrontDistanceJudgementValue = std::stol(ws);
+			}
+
+			str = txtDistanceSideJudgeData->Text;
+			if (str != "")
+			{
+				// String⇒wstring
+				std::wstring    ws(str->Data());
+				// wstring⇒Long
+				m_Decision->m_RightDistanceJudgementValue = std::stol(ws);
+				m_Decision->m_LeftDistanceJudgementValue = std::stol(ws);
+			}
+
+			str = txtGyroSlopeJudgeData->Text;
+			if (str != "")
+			{
+				// String⇒wstring
+				std::wstring    ws(str->Data());
+				// wstring⇒Long
+				m_Decision->m_SlopeJudgementValue = std::stol(ws);
+			}
+		}
+		else
+		{
+			m_ReadJudgeValueInterval++;
+		}
 	}
 
 	InitializeDataSender();

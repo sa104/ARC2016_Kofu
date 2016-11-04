@@ -103,6 +103,21 @@ void ::ARC2016::MainPage::Connect(int __connectionId, ::Platform::Object^ __targ
                 this->txtBinaryThreshold = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
+        case 15:
+            {
+                this->txtDistanceFrontJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 16:
+            {
+                this->txtDistanceSideJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 17:
+            {
+                this->txtGyroSlopeJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
     }
     _contentLoaded = true;
 }

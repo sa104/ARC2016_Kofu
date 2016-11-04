@@ -12,6 +12,7 @@ Decision::Decision(SensorMonitor* sensMonitor, DataSender* dataSender)
  : TaskBase("Decision", 100)
  , m_SendFlag(0)
  , m_MyHeartBeatFlag(0)
+ , m_HeartBeatInterval(0)
 {
 	m_SensorMonitor = sensMonitor;
 	m_DataSender = dataSender;
@@ -48,13 +49,13 @@ ResultEnum Decision::finalize()
 void Decision::HeartBeatCheck()
 {
 	SendData();
-	ReadData();
+	// ReadData();
 }
 
 void Decision::SendData()
 {
-	if (m_SendFlag == 0)
-	{
+	// if (m_SendFlag == 0)
+	// {
 		if (m_HeartBeatInterval >= 10)
 		{
 			// ラズパイ側のハートビート信号を反転させる
@@ -76,13 +77,14 @@ void Decision::SendData()
 			sendBuffer[9] = 0;
 
 			memcpy(m_DataSender->m_HeartBeatSendBuffer, sendBuffer, sizeof(sendBuffer));
+			m_SendFlag = 1;
 		}
 		else
 		{
-			// ラズパイ側受信後のインターバル時間到達待ち
+			// ラズパイ側受信後のインターバル時間到達待ち, もしくは回線空き待ち
 			m_HeartBeatInterval++;
 		}
-	}
+	//}
 }
 
 void Decision::ReadData()
@@ -223,6 +225,8 @@ long Decision::DistanceCheck(long typeLineTrace)
 		ret = typeLineTrace;
 		break;
 	case E_DISTANCE_JUDGE_FRONT:
+		// ゴール検知後なら、Put動作
+		// 以下のifには後でelseをつける
 		if (typeLineTrace != E_MOVE_STRAIGHT)
 		{
 			ret = typeLineTrace;
@@ -258,15 +262,16 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 	bool leftFlag = false;
 
 	// 各距離データの閾値チェック（近辺に壁があるかどうか）
-	if (data[E_DISTANCE_ORDER_FRONT] <= m_FlontDistanceJudgementValue)
+	// 条件設定が0の場合は距離センサ情報を無視する
+	if (m_FrontDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_FRONT] <= m_FrontDistanceJudgementValue)
 	{
 		frontFlag = true;
 	}
-	if (data[E_DISTANCE_ORDER_RIGHT] <= m_RightDistanceJudgementValue)
+	if (m_RightDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_RIGHT] <= m_RightDistanceJudgementValue)
 	{
 		rightFlag = true;
 	}
-	if (data[E_DISTANCE_ORDER_LEFT] <= m_LeftDistanceJudgementValue)
+	if (m_LeftDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_LEFT] <= m_LeftDistanceJudgementValue)
 	{
 		leftFlag = true;
 	}
@@ -323,17 +328,13 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 E_GYRO_MODE_TYPE Decision::GyroCheck()
 {
 	E_GYRO_MODE_TYPE ret = E_GYRO_MODE_FLAT;
-	double nowSlopeDegree = 0;
 
 	// ジャイロセンサの読み値取得
 	std::vector<ARC2016::Parts::GyroSensor::GyroDataStr> gyroValue;
 	m_SensorMonitor->GetGyroSensorValue(gyroValue);
 
-	// 一定以上
-	nowSlopeDegree = fabs(gyroValue[0].AngleY) / 90;
-
 	// 各状態の閾値チェック（坂道かどうか）
-	if (nowSlopeDegree > m_SlopeJudgementValue)
+	if (gyroValue[0].AngleY > m_SlopeJudgementValue)
 	{
 		// 坂道
 		ret = E_GYRO_MODE_SLOPE;

@@ -66,6 +66,11 @@ namespace ARC2016
 			Decision(SensorMonitor* sensMonitor, DataSender* dataSender);
 			virtual ~Decision();
 
+			// センサデータから状態を判定する為の条件設定値
+			long					m_FrontDistanceJudgementValue;
+			long					m_RightDistanceJudgementValue;
+			long					m_LeftDistanceJudgementValue;
+			double					m_SlopeJudgementValue;
 
 
 		protected:
@@ -79,12 +84,6 @@ namespace ARC2016
 			int						m_MyHeartBeatFlag;
 			int						m_MiconHeartBeatFlag;
 			int						m_HeartBeatInterval;
-
-			// 仮
-			long					m_FlontDistanceJudgementValue;
-			long					m_RightDistanceJudgementValue;
-			long					m_LeftDistanceJudgementValue;
-			double					m_SlopeJudgementValue;
 
 			ResultEnum				initialize();
 			ResultEnum				taskMain();
