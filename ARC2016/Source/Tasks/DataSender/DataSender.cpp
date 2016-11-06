@@ -6,7 +6,7 @@ using namespace ARC2016::Framework;
 using namespace ARC2016::Tasks;
 
 DataSender::DataSender(Serial* device)
- : TaskBase("DataSender", 1000)
+ : TaskBase("DataSender", 100)
  , m_SerialDevice(device)
 {
 	for (int i = 0; i < 10; i++)

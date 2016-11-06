@@ -143,23 +143,22 @@ void Decision::MoveTypeDecision()
 		E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
 	}
 
-	setFrontMoveCommand();
 	// Motor‚ÖŽwŽ¦
-	//switch (moveLineTrace)
-	//{
-	//	case E_MOVE_STRAIGHT:
-	//		setFrontMoveCommand();
-	//		break;
-	//	case E_MOVE_TURNLEFT:
-	//		setLeftMoveCommand();
-	//		break;
-	//	case E_MOVE_TURNRIGHT:
-	//		setRightMoveCommand();
-	//		break;
-	//	case E_MOVE_UNKNOWN:
-	//		setStopCommand();
-	//		break;
-	//}
+	switch (moveLineTrace)
+	{
+		case E_MOVE_STRAIGHT:
+			setFrontMoveCommand();
+			break;
+		case E_MOVE_TURNLEFT:
+			setLeftMoveCommand();
+			break;
+		case E_MOVE_TURNRIGHT:
+			setRightMoveCommand();
+			break;
+		case E_MOVE_UNKNOWN:
+			setStopCommand();
+			break;
+	}
 
 }
 
@@ -379,10 +378,10 @@ void Decision::setFrontMoveCommand()
 	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
-	sendBuffer[7] = 0;
+	sendBuffer[7] = SLOPE;
 
 	// ‘¬“x
-	sendBuffer[8] = 3;
+	sendBuffer[8] = MOTOR_SPEED;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -414,10 +413,10 @@ void Decision::setRightMoveCommand()
 	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
-	sendBuffer[7] = 0;
+	sendBuffer[7] = SLOPE;
 
 	// ‘¬“x
-	sendBuffer[8] = 3;
+	sendBuffer[8] = MOTOR_SPEED;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -449,10 +448,10 @@ void Decision::setLeftMoveCommand()
 	sendBuffer[6] = 85;
 
 	// ŒXŽÎ
-	sendBuffer[7] = 0;
+	sendBuffer[7] = SLOPE;
 
 	// ‘¬“x
-	sendBuffer[8] = 3;
+	sendBuffer[8] = MOTOR_SPEED;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 

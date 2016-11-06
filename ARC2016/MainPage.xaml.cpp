@@ -47,6 +47,7 @@ MainPage::MainPage()
  , m_DataSenderSerial(nullptr)
  , m_DataSender(nullptr)
  , m_MoveType(0)
+ , m_CameraAliveCounter(0)
 {
 	InitializeComponent();
 	InitializeHardware();
@@ -83,11 +84,11 @@ void ARC2016::MainPage::InitializeCamera()
 			m_PreviewHeight = (int)previewProperty->Height;
 
 			m_CameraTimer = ref new DispatcherTimer();
-			TimeSpan t;
-			t.Duration = 200;
-			m_CameraTimer->Interval = t;
-
 			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Camera);
+
+			TimeSpan t;
+			t.Duration = 1000;
+			m_CameraTimer->Interval = t;
 			m_CameraTimer->Start();
 		});
 	});
@@ -115,7 +116,7 @@ void ARC2016::MainPage::InitializeSensorMonitor()
 	create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cDistanceSensorSettings)).then([this, isSimulation](I2cDevice^ distanceSensorDevice)
 	{
 		// ジャイロセンサ：I2C
-		auto i2cGyroSensorSettings = ref new I2cConnectionSettings(0x6B);
+		auto i2cGyroSensorSettings = ref new I2cConnectionSettings(0x18);
 		i2cGyroSensorSettings->BusSpeed = I2cBusSpeed::FastMode;
 		create_task(I2cDevice::FromIdAsync(m_I2cDeviceCollection->GetAt(0)->Id, i2cGyroSensorSettings)).then([this, isSimulation, distanceSensorDevice](I2cDevice^ gyroSensorDevice)
 		{
@@ -267,7 +268,7 @@ void ARC2016::MainPage::ImgCamera_Loaded(Platform::Object^ sender, Windows::UI::
 	m_SensorTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_SensorMonitor);
 
 	TimeSpan t;
-	t.Duration = 10;
+	t.Duration = 100;
 	m_SensorTimer->Interval = t;
 	m_SensorTimer->Start();
 }
@@ -288,6 +289,17 @@ void ARC2016::MainPage::btnSensor_Click(Platform::Object^ sender, Windows::UI::X
 
 void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^ e)
 {
+	if (m_CameraAliveCounter < 2147483646)
+	{
+		m_CameraAliveCounter++;
+	}
+	else
+	{
+		m_CameraAliveCounter = 0;
+	}
+
+	txtCameraAlive->Text = m_CameraAliveCounter.ToString();
+
 	m_CameraTimer->Stop();
 
 	VideoFrame^ videoFrame = ref new VideoFrame(BitmapPixelFormat::Bgra8, m_PreviewWidth, m_PreviewHeight);
@@ -299,13 +311,28 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 		Platform::String^ str1 = txtBinaryThreshold->Text;
 		if (str1 != "")
 		{ 
-			// String⇒wstring
 			std::wstring    ws1(str1->Data());
-
 			lData = std::stol(ws1);
 		}
+		ChangeBinaryThresh(lData);
 
-		ChangeBinaryThresh(lData);		
+		Platform::String^ str2 = txtCameraDuration->Text;
+		if (str2 != "")
+		{
+			std::wstring    ws1(str2->Data());
+			lData = std::stol(ws1);
+		}
+		TimeSpan t;
+		t.Duration = lData;
+		m_CameraTimer->Interval = t;
+
+		Platform::String^ str3 = txtCornerIndex->Text;
+		if (str3 != "")
+		{
+			std::wstring    ws1(str3->Data());
+			lData = std::stol(ws1);
+		}
+		SetCornerIndex(lData);
 
 		bool isChecked = (bool)ChkDisplay->IsChecked->Value;
 		if (isChecked == true)
@@ -320,10 +347,13 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 
 		m_CameraTimer->Start();
 	});
+	Sleep(500);
 }
 
 void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::Object^ e)
 {
+	char sendBuffer[10] = { 0 };
+
 	if (m_SensorMonitor != nullptr)
 	{
 		std::vector<long>	distanceValue;
@@ -355,22 +385,46 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 	InitializeDataSender();
 	InitializeDecision();
 
-	// 強制出力デバッグ
-	//if (m_DataSender != nullptr)
-	//{
-	//	unsigned char sendBuffer[10] = { 0 };
+	switch (m_MoveType)
+	{
+	case PATTERN_FRONT:
+	case PATTERN_FRONT_LEFT_15:              // 前進＆左 15°
+	case PATTERN_FRONT_LEFT_30:              // 前進＆左 30°
+	case PATTERN_FRONT_LEFT_45:              // 前進＆左 45°
+	case PATTERN_TURN_LEFT_ONCE:             // 左旋回 単体 (15°)
+	case PATTERN_TURN_LEFT_45:               // 左旋回 45°
+	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
+	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
+	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
+	case PATTERN_TURN_RIGHT_ONCE:            // 右旋回 単体 (15°)
+	case PATTERN_TURN_RIGHT_45:              // 右旋回 45°
+		txtTarget->Text = "FRONT";
+		break;
+	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
+	case PATTERN_TURN_LEFT_90:               // 左旋回 90°
+		txtTarget->Text = "LEFT";
+		break;
+	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
+	case PATTERN_TURN_RIGHT_90:              // 右旋回 90°
+		sendBuffer[0] = BUFFER1_TOP_FRAME;
+		sendBuffer[1] = BUFFER2_SECOND_FRAME;
+		sendBuffer[2] = BUFFER3_MOTION_PLAY;
+		sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+		sendBuffer[4] = 36;
+		sendBuffer[5] = 6;
+		sendBuffer[6] = 85;
+		sendBuffer[7] = 0;
+		sendBuffer[8] = 3;
+		txtTarget->Text = "RIGHT";
+		break;
+	case PATTERN_STOP:
+	case PATTERN_BACK:
+	case PATTERN_PUT:
+	case PATTERN_MISSING:
+		txtTarget->Text = "UNKNOWN";
+		break;
 
-	//	sendBuffer[0] = BUFFER1_TOP_FRAME;
-	//	sendBuffer[1] = BUFFER2_SECOND_FRAME;
-	//	sendBuffer[2] = BUFFER3_MOTION_PLAY;
-	//	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
-	//	sendBuffer[4] = 36;
-	//	sendBuffer[5] = 36;
-	//	sendBuffer[6] = 85;
-	//	sendBuffer[7] = 0;
-	//	sendBuffer[8] = 3;
-	//	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
-	//}
-
-
+	default:
+		break;
+	}
 }

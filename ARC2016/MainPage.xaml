@@ -21,6 +21,10 @@
         <TextBox x:Name="txtAccelZ" HorizontalAlignment="Left" Height="10" Margin="355,320,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAngleX" HorizontalAlignment="Left" Height="10" Margin="491,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
         <TextBox x:Name="txtAngleY" HorizontalAlignment="Left" Height="10" Margin="491,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,100,0,0" TextWrapping="Wrap" Text="70" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,100,0,0" TextWrapping="Wrap" Text="65" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtCameraAlive" HorizontalAlignment="Left" Height="10" Margin="600,130,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtTarget" HorizontalAlignment="Left" Height="10" Margin="600,160,0,0" TextWrapping="Wrap" Text="Non" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtCameraDuration" HorizontalAlignment="Left" Height="10" Margin="600,190,0,0" TextWrapping="Wrap" Text="300" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtCornerIndex" HorizontalAlignment="Left" Height="10" Margin="600,220,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
     </Grid>
 </Page>

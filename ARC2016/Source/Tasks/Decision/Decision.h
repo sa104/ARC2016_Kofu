@@ -50,11 +50,11 @@ typedef enum _E_GYRO_MODE_TYPE
 #define BUFFER3_STATUS_SEND_REQUEST		(254)					/* ステータス送信要求 */
 
 // buffer[3]
-#define BUFFER4_DIRECTION_FRONT			(1)
-#define BUFFER4_DIRECTION_BACK			(0)
+#define BUFFER4_DIRECTION_FRONT			(0)
+#define BUFFER4_DIRECTION_BACK			(1)
 
-#define LEFT_STRIDE(x)					(x*12)
-#define RIGHT_STRIDE(x)				(x*12)
+#define MOTOR_SPEED						(5)
+#define SLOPE							(127)
 
 namespace ARC2016
 {
