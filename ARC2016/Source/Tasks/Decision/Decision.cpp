@@ -278,16 +278,16 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 
 	// 各距離データの閾値チェック（近辺に壁があるかどうか）
 	// 条件設定が0の場合は距離センサ情報を無視する
-	m_FrontDistanceJudge = WallCheck(m_FrontDistanceJudgementValue, data[E_DISTANCE_ORDER_FRONT]);
-	m_RightDistanceJudge = WallCheck(m_RightDistanceJudgementValue, data[E_DISTANCE_ORDER_RIGHT]);
-	m_LeftDistanceJudge = WallCheck(m_LeftDistanceJudgementValue, data[E_DISTANCE_ORDER_LEFT]);
+	m_FrontDistanceJudge = WallCheck(m_FrontDistanceJudgementValue, data.at(E_DISTANCE_ORDER_FRONT));
+	m_RightDistanceJudge = WallCheck(m_RightDistanceJudgementValue, data.at(E_DISTANCE_ORDER_RIGHT));
+	m_LeftDistanceJudge = WallCheck(m_LeftDistanceJudgementValue, data.at(E_DISTANCE_ORDER_LEFT));
 
 	// 最終セクションの場合はゴール判定も行う
 	if (m_CourseSection == E_COURSE_SECTION_FINAL)
 	{
-		bool frontJudge = WallCheck(m_FrontDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_FRONT]);
-		bool rightJudge = WallCheck(m_RightDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_RIGHT]);
-		bool leftJudge = WallCheck(m_LeftDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_LEFT]);
+		bool frontJudge = WallCheck(m_FrontDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_FRONT));
+		bool rightJudge = WallCheck(m_RightDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_RIGHT));
+		bool leftJudge = WallCheck(m_LeftDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_LEFT));
 		
 		if (frontJudge == true && rightJudge == true && leftJudge == true)
 		{
@@ -365,7 +365,7 @@ E_GYRO_MODE_TYPE Decision::GyroCheck()
 	m_SensorMonitor->GetGyroSensorValue(gyroValue);
 
 	// 各状態の閾値チェック（坂道かどうか）
-	if (gyroValue[0].AngleY > m_SlopeJudgementValue)
+	if (gyroValue.at(0).AngleY > m_SlopeJudgementValue)
 	{
 		// 坂道
 		ret = E_GYRO_MODE_SLOPE;
