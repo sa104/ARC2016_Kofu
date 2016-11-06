@@ -34,6 +34,16 @@ typedef enum _E_GYRO_MODE_TYPE
 	E_GYRO_MODE_SLOPE,
 } E_GYRO_MODE_TYPE;
 
+typedef enum _E_COURSE_SECTION_TYPE
+{
+	E_COURSE_SECTION_FIRST = 0x00,	// 第1セクション
+	E_COURSE_SECTION_SECOND,		// 第2セクション（坂）
+	E_COURSE_SECTION_THIRD,			// 第3セクション
+	E_COURSE_SECTION_FINAL,			// 最終セクション　（第3セクション到達から一定時間経過で）
+} E_COURSE_SECTION_TYPE;
+
+#define COURSE_SECTION_FINAL_JUDGE_TIME	(300)					/* 第3セクション到達からFinalセクション到達と判定するまでの時間 */
+
 // buffer[0]
 #define BUFFER1_TOP_FRAME				(0xFF)
 
@@ -72,6 +82,11 @@ namespace ARC2016
 			long					m_LeftDistanceJudgementValue;
 			double					m_SlopeJudgementValue;
 
+			// ゴール判定用
+			long					m_FrontDistanceGoalJudgementValue;
+			long					m_RightDistanceGoalJudgementValue;
+			long					m_LeftDistanceGoalJudgementValue;
+
 
 		protected:
 
@@ -85,6 +100,9 @@ namespace ARC2016
 			int						m_MiconHeartBeatFlag;
 			int						m_HeartBeatInterval;
 
+			// Goalフラグ
+			bool					m_Goal;
+
 			ResultEnum				initialize();
 			ResultEnum				taskMain();
 			ResultEnum				finalize();
@@ -95,10 +113,17 @@ namespace ARC2016
 			void					ReadData();
 
 			// 動作判定関連
+			E_COURSE_SECTION_TYPE	m_CourseSection;
+			E_GYRO_MODE_TYPE		m_GyroStatus;
+			int						m_FinalSectionJudgeCount;
+			bool					m_FrontDistanceJudge;
+			bool					m_RightDistanceJudge;
+			bool					m_LeftDistanceJudge;
 			long					ConversionLineTraceFlag(long flag);
 			void				    MoveTypeDecision();
 			long					DistanceCheck(long typeLineTrace);
 			E_DISTANCE_JUDGE_TYPE	DistanceSensorCheck(std::vector<long> data);
+			bool					WallCheck(long judgeValue, long data);
 			E_GYRO_MODE_TYPE		GyroCheck();
 
 			// モーター駆動コマンド

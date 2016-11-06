@@ -13,6 +13,13 @@ Decision::Decision(SensorMonitor* sensMonitor, DataSender* dataSender)
  , m_SendFlag(0)
  , m_MyHeartBeatFlag(0)
  , m_HeartBeatInterval(0)
+ , m_CourseSection(E_COURSE_SECTION_FIRST)
+ , m_GyroStatus(E_GYRO_MODE_FLAT)
+ , m_FinalSectionJudgeCount(0)
+ , m_FrontDistanceJudge(false)
+ , m_RightDistanceJudge(false)
+ , m_LeftDistanceJudge(false)
+ , m_Goal(false)
 {
 	m_SensorMonitor = sensMonitor;
 	m_DataSender = dataSender;
@@ -87,6 +94,7 @@ void Decision::SendData()
 	//}
 }
 
+// 差し当たり使わない
 void Decision::ReadData()
 {
 	if (m_SendFlag == 1)
@@ -136,14 +144,26 @@ void Decision::MoveTypeDecision()
 	long moveFlag = GetMoveType();
 	long moveLineTrace = ConversionLineTraceFlag(moveFlag);
 
-	// 距離センサ状況とライントレース結果により動作決定
-	long moveIntegration = DistanceCheck(moveLineTrace);
+	long moveIntegration = moveLineTrace;
+	m_GyroStatus = E_GYRO_MODE_FLAT;
 
-	// ジャイロセンサ状況確認
-	E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
+	if (m_SensorMonitor != nullptr)
+	{
+		// ジャイロセンサ状況確認
+		m_GyroStatus = GyroCheck();
+
+		// 距離センサ状況とライントレース結果により動作決定
+		long moveIntegration = DistanceCheck(moveLineTrace);
+
+		// 第3セクションからFinalセクションと判定するまでのカウント
+		if (m_CourseSection == E_COURSE_SECTION_THIRD)
+		{
+			m_FinalSectionJudgeCount++;
+		}
+	}
 
 	// Motorへ指示
-	switch (moveLineTrace)
+	switch (moveIntegration)
 	{
 		case E_MOVE_STRAIGHT:
 			setFrontMoveCommand();
@@ -225,8 +245,6 @@ long Decision::DistanceCheck(long typeLineTrace)
 		ret = typeLineTrace;
 		break;
 	case E_DISTANCE_JUDGE_FRONT:
-		// ゴール検知後なら、Put動作
-		// 以下のifには後でelseをつける
 		if (typeLineTrace != E_MOVE_STRAIGHT)
 		{
 			ret = typeLineTrace;
@@ -257,31 +275,32 @@ long Decision::DistanceCheck(long typeLineTrace)
 E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 {
 	E_DISTANCE_JUDGE_TYPE ret = E_DISTANCE_JUDGE_NONE;
-	bool frontFlag = false;
-	bool rightFlag = false;
-	bool leftFlag = false;
 
 	// 各距離データの閾値チェック（近辺に壁があるかどうか）
 	// 条件設定が0の場合は距離センサ情報を無視する
-	if (m_FrontDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_FRONT] <= m_FrontDistanceJudgementValue)
+	m_FrontDistanceJudge = WallCheck(m_FrontDistanceJudgementValue, data[E_DISTANCE_ORDER_FRONT]);
+	m_RightDistanceJudge = WallCheck(m_RightDistanceJudgementValue, data[E_DISTANCE_ORDER_RIGHT]);
+	m_LeftDistanceJudge = WallCheck(m_LeftDistanceJudgementValue, data[E_DISTANCE_ORDER_LEFT]);
+
+	// 最終セクションの場合はゴール判定も行う
+	if (m_CourseSection == E_COURSE_SECTION_FINAL)
 	{
-		frontFlag = true;
-	}
-	if (m_RightDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_RIGHT] <= m_RightDistanceJudgementValue)
-	{
-		rightFlag = true;
-	}
-	if (m_LeftDistanceJudgementValue != 0 && data[E_DISTANCE_ORDER_LEFT] <= m_LeftDistanceJudgementValue)
-	{
-		leftFlag = true;
+		bool frontJudge = WallCheck(m_FrontDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_FRONT]);
+		bool rightJudge = WallCheck(m_RightDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_RIGHT]);
+		bool leftJudge = WallCheck(m_LeftDistanceGoalJudgementValue, data[E_DISTANCE_ORDER_LEFT]);
+		
+		if (frontJudge == true && rightJudge == true && leftJudge == true)
+		{
+			m_Goal = true;
+		}
 	}
 
 	// 状況判定
-	if (frontFlag == true)
+	if (m_FrontDistanceJudge == true)
 	{
-		if (rightFlag == true)
+		if (m_RightDistanceJudge == true)
 		{
-			if (leftFlag == true)
+			if (m_LeftDistanceJudge == true)
 			{
 				// 3方向 壁有
 				ret = E_DISTANCE_JUDGE_ALL;
@@ -292,7 +311,7 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 				ret = E_DISTANCE_JUDGE_FRONT_RIGHT;
 			}
 		}
-		else if (leftFlag == true)
+		else if (m_LeftDistanceJudge == true)
 		{
 			// 前・左 壁有
 			ret = E_DISTANCE_JUDGE_FRONT_LEFT;
@@ -303,9 +322,9 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 			ret = E_DISTANCE_JUDGE_FRONT;
 		}
 	}
-	else if (rightFlag == true)
+	else if (m_RightDistanceJudge == true)
 	{
-		if (leftFlag == true)
+		if (m_LeftDistanceJudge == true)
 		{
 			// 左右 壁有
 			ret = E_DISTANCE_JUDGE_RIGHT_LEFT;
@@ -316,13 +335,25 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 			ret = E_DISTANCE_JUDGE_RIGHT;
 		}
 	}
-	else if (leftFlag == true)
+	else if (m_LeftDistanceJudge == true)
 	{
 		// 左のみ壁
 		ret = E_DISTANCE_JUDGE_LEFT;
 	}
 
 	return ret;
+}
+
+bool Decision::WallCheck(long judgeValue, long data)
+{
+	bool retVal = false;
+
+	if (judgeValue != 0 && data <= judgeValue)
+	{
+		retVal = true;
+	}
+
+	return retVal;
 }
 
 E_GYRO_MODE_TYPE Decision::GyroCheck()
@@ -343,6 +374,24 @@ E_GYRO_MODE_TYPE Decision::GyroCheck()
 	{
 		// 通常
 		ret = E_GYRO_MODE_FLAT;
+	}
+
+	// 走行中のセクション判定
+	if (m_CourseSection == E_COURSE_SECTION_FIRST && ret == E_GYRO_MODE_SLOPE)
+	{
+		// 第2セクションに入ったと判定
+		m_CourseSection = E_COURSE_SECTION_SECOND;
+	}
+	else if (m_CourseSection == E_COURSE_SECTION_SECOND && ret == E_GYRO_MODE_FLAT)
+	{
+		// 第3セクションに入ったと判定
+		m_CourseSection = E_COURSE_SECTION_THIRD;
+	}
+	else if (m_CourseSection == E_COURSE_SECTION_THIRD && m_FinalSectionJudgeCount >= COURSE_SECTION_FINAL_JUDGE_TIME)
+	{
+		// 第3セクション到達後、一定時間経過によりFinalセクションと判定
+		m_CourseSection = E_COURSE_SECTION_FINAL;
+		m_FinalSectionJudgeCount = 0;
 	}
 
 	return (ret);

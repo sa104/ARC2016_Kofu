@@ -53,6 +53,8 @@ namespace ARC2016
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceFrontJudgeData;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceSideJudgeData;
         private: ::Windows::UI::Xaml::Controls::TextBox^ txtGyroSlopeJudgeData;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceFrontGoalJudgeData;
+        private: ::Windows::UI::Xaml::Controls::TextBox^ txtDistanceSideGoalJudgeData;
     };
 }
 

@@ -118,6 +118,16 @@ void ::ARC2016::MainPage::Connect(int __connectionId, ::Platform::Object^ __targ
                 this->txtGyroSlopeJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
+        case 18:
+            {
+                this->txtDistanceFrontGoalJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 19:
+            {
+                this->txtDistanceSideGoalJudgeData = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
     }
     _contentLoaded = true;
 }

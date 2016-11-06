@@ -377,6 +377,25 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 				// wstring⇒Long
 				m_Decision->m_SlopeJudgementValue = std::stol(ws);
 			}
+
+			// Goal用
+			str = txtDistanceFrontGoalJudgeData->Text;
+			if (str != "")
+			{
+				// String⇒wstring
+				std::wstring    ws(str->Data());
+				// wstring⇒Long
+				m_Decision->m_FrontDistanceGoalJudgementValue = std::stol(ws);
+			}
+			str = txtDistanceSideGoalJudgeData->Text;
+			if (str != "")
+			{
+				// String⇒wstring
+				std::wstring    ws(str->Data());
+				// wstring⇒Long
+				m_Decision->m_RightDistanceGoalJudgementValue = std::stol(ws);
+				m_Decision->m_LeftDistanceGoalJudgementValue = std::stol(ws);
+			}
 		}
 		else
 		{

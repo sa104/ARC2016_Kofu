@@ -25,5 +25,7 @@
         <TextBox x:Name="txtDistanceFrontJudgeData" HorizontalAlignment="Left" Height="10" Margin="720,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
         <TextBox x:Name="txtDistanceSideJudgeData" HorizontalAlignment="Left" Height="10" Margin="720,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
         <TextBox x:Name="txtGyroSlopeJudgeData" HorizontalAlignment="Left" Height="10" Margin="840,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtDistanceFrontGoalJudgeData" HorizontalAlignment="Left" Height="10" Margin="960,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBox x:Name="txtDistanceSideGoalJudgeData" HorizontalAlignment="Left" Height="10" Margin="960,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
     </Grid>
 </Page>
