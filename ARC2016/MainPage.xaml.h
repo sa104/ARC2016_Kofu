@@ -46,6 +46,7 @@ namespace ARC2016
 		ARC2016::Tasks::DataSender*									m_DataSender;
 
 		// 思考タスク
+		int															m_ReadJudgeValueInterval;
 		ARC2016::Tasks::Decision*									m_Decision;
 
 		void InitializeHardware();

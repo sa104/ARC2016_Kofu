@@ -9,9 +9,19 @@ using namespace Windows::Foundation;
 using namespace Windows::System;
 
 Decision::Decision(SensorMonitor* sensMonitor, DataSender* dataSender)
- : TaskBase("Decision", 1000)
+ : TaskBase("Decision", 100)
  , m_SendFlag(0)
  , m_MyHeartBeatFlag(0)
+ , m_HeartBeatInterval(0)
+ , m_CourseSection(E_COURSE_SECTION_FIRST)
+ , m_GyroStatus(E_GYRO_MODE_FLAT)
+ , m_FinalSectionJudgeCount(0)
+ , m_FrontDistanceJudge(false)
+ , m_RightDistanceJudge(false)
+ , m_LeftDistanceJudge(false)
+ , m_Goal(false)
+ , m_CameraPosition(30)
+ , m_BeforeCameraPosition(0)
 {
 	m_SensorMonitor = sensMonitor;
 	m_DataSender = dataSender;
@@ -33,6 +43,13 @@ ResultEnum Decision::taskMain()
 	// マイコンとのハートビート監視
 	HeartBeatCheck();
 
+	// カメラの角度更新
+	if (m_CameraPosition != m_BeforeCameraPosition)
+	{
+		setCameraMoveCommand(m_CameraPosition);
+		m_BeforeCameraPosition = m_CameraPosition;
+	}
+
 	// カメラ & センサ情報による動作判定及び指示
 	MoveTypeDecision();
 
@@ -48,13 +65,13 @@ ResultEnum Decision::finalize()
 void Decision::HeartBeatCheck()
 {
 	SendData();
-	ReadData();
+	// ReadData();
 }
 
 void Decision::SendData()
 {
-	if (m_SendFlag == 0)
-	{
+	// if (m_SendFlag == 0)
+	// {
 		if (m_HeartBeatInterval >= 10)
 		{
 			// ラズパイ側のハートビート信号を反転させる
@@ -76,15 +93,17 @@ void Decision::SendData()
 			sendBuffer[9] = 0;
 
 			memcpy(m_DataSender->m_HeartBeatSendBuffer, sendBuffer, sizeof(sendBuffer));
+			m_SendFlag = 1;
 		}
 		else
 		{
-			// ラズパイ側受信後のインターバル時間到達待ち
+			// ラズパイ側受信後のインターバル時間到達待ち, もしくは回線空き待ち
 			m_HeartBeatInterval++;
 		}
-	}
+	//}
 }
 
+// 差し当たり使わない
 void Decision::ReadData()
 {
 	if (m_SendFlag == 1)
@@ -134,32 +153,80 @@ void Decision::MoveTypeDecision()
 	long moveFlag = GetMoveType();
 	long moveLineTrace = ConversionLineTraceFlag(moveFlag);
 
+	long moveIntegration = moveLineTrace;
+	m_GyroStatus = E_GYRO_MODE_FLAT;
+
 	if (m_SensorMonitor != nullptr)
 	{
+		// ジャイロセンサ状況確認
+		m_GyroStatus = GyroCheck();
+
 		// 距離センサ状況とライントレース結果により動作決定
 		long moveIntegration = DistanceCheck(moveLineTrace);
 
-		// ジャイロセンサ状況確認
-		E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
+		// 第3セクションからFinalセクションと判定するまでのカウント
+		if (m_CourseSection == E_COURSE_SECTION_THIRD)
+		{
+			m_FinalSectionJudgeCount++;
+		}
 	}
 
+	// 右左折検知後は一定回数状態を保持
+	moveIntegration = moveTurnRetention(moveIntegration);
+
 	// Motorへ指示
-	switch (moveLineTrace)
+	switch (moveIntegration)
 	{
 		case E_MOVE_STRAIGHT:
 			setFrontMoveCommand();
 			break;
 		case E_MOVE_TURNLEFT:
+			if (m_LeftMoveFlag == 0)
+			{
+				m_LeftMoveFlag = 1;
+			}
 			setLeftMoveCommand();
 			break;
 		case E_MOVE_TURNRIGHT:
+			if (m_RightMoveFlag == 0)
+			{
+				m_RightMoveFlag = 1;
+			}
 			setRightMoveCommand();
-			break;
-		case E_MOVE_UNKNOWN:
-			setStopCommand();
 			break;
 	}
 
+}
+
+// 右左折検知後は一定回数状態を保持
+// 一定回数を超えた場合、フラグを落としカメラの指示に従う
+long Decision::moveTurnRetention(long moveFlag)
+{
+	long retVal = moveFlag;
+
+	if (m_RightMoveFlag > 0 && m_RightMoveCount < RIGHTLEFT_MOVE_COUNT_MAX)
+	{
+		retVal = E_MOVE_TURNRIGHT;
+		m_RightMoveCount++;
+	}
+	else
+	{
+		m_RightMoveFlag = 0;
+		m_RightMoveCount = 0;
+	}
+
+	if (m_LeftMoveFlag > 0 && m_LeftMoveCount < RIGHTLEFT_MOVE_COUNT_MAX)
+	{
+		retVal = E_MOVE_TURNLEFT;
+		m_LeftMoveCount++;
+	}
+	else
+	{
+		m_LeftMoveFlag = 0;
+		m_LeftMoveCount = 0;
+	}
+
+	return retVal;
 }
 
 long Decision::ConversionLineTraceFlag(long flag)
@@ -169,23 +236,23 @@ long Decision::ConversionLineTraceFlag(long flag)
 	switch (flag)
 	{
 	case PATTERN_FRONT:
+		retVal = E_MOVE_STRAIGHT;
+		break;
 	case PATTERN_FRONT_LEFT_15:              // 前進＆左 15°
 	case PATTERN_FRONT_LEFT_30:              // 前進＆左 30°
 	case PATTERN_FRONT_LEFT_45:              // 前進＆左 45°
+	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
 	case PATTERN_TURN_LEFT_ONCE:             // 左旋回 単体 (15°)
 	case PATTERN_TURN_LEFT_45:               // 左旋回 45°
-	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
-	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
-	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
-	case PATTERN_TURN_RIGHT_ONCE:            // 右旋回 単体 (15°)
-	case PATTERN_TURN_RIGHT_45:              // 右旋回 45°
-		retVal = E_MOVE_STRAIGHT;
-		break;
-	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
 	case PATTERN_TURN_LEFT_90:               // 左旋回 90°
 		retVal = E_MOVE_TURNLEFT;
 		break;
+	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
+	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
+	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
 	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
+	case PATTERN_TURN_RIGHT_ONCE:            // 右旋回 単体 (15°)
+	case PATTERN_TURN_RIGHT_45:              // 右旋回 45°
 	case PATTERN_TURN_RIGHT_90:              // 右旋回 90°
 		retVal = E_MOVE_TURNRIGHT;
 		break;
@@ -259,30 +326,32 @@ long Decision::DistanceCheck(long typeLineTrace)
 E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 {
 	E_DISTANCE_JUDGE_TYPE ret = E_DISTANCE_JUDGE_NONE;
-	bool frontFlag = false;
-	bool rightFlag = false;
-	bool leftFlag = false;
 
 	// 各距離データの閾値チェック（近辺に壁があるかどうか）
-	if (data[E_DISTANCE_ORDER_FRONT] <= m_FlontDistanceJudgementValue)
+	// 条件設定が0の場合は距離センサ情報を無視する
+	m_FrontDistanceJudge = WallCheck(m_FrontDistanceJudgementValue, data.at(E_DISTANCE_ORDER_FRONT));
+	m_RightDistanceJudge = WallCheck(m_RightDistanceJudgementValue, data.at(E_DISTANCE_ORDER_RIGHT));
+	m_LeftDistanceJudge = WallCheck(m_LeftDistanceJudgementValue, data.at(E_DISTANCE_ORDER_LEFT));
+
+	// 最終セクションの場合はゴール判定も行う
+	if (m_CourseSection == E_COURSE_SECTION_FINAL)
 	{
-		frontFlag = true;
-	}
-	if (data[E_DISTANCE_ORDER_RIGHT] <= m_RightDistanceJudgementValue)
-	{
-		rightFlag = true;
-	}
-	if (data[E_DISTANCE_ORDER_LEFT] <= m_LeftDistanceJudgementValue)
-	{
-		leftFlag = true;
+		bool frontJudge = WallCheck(m_FrontDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_FRONT));
+		bool rightJudge = WallCheck(m_RightDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_RIGHT));
+		bool leftJudge = WallCheck(m_LeftDistanceGoalJudgementValue, data.at(E_DISTANCE_ORDER_LEFT));
+		
+		if (frontJudge == true && rightJudge == true && leftJudge == true)
+		{
+			m_Goal = true;
+		}
 	}
 
 	// 状況判定
-	if (frontFlag == true)
+	if (m_FrontDistanceJudge == true)
 	{
-		if (rightFlag == true)
+		if (m_RightDistanceJudge == true)
 		{
-			if (leftFlag == true)
+			if (m_LeftDistanceJudge == true)
 			{
 				// 3方向 壁有
 				ret = E_DISTANCE_JUDGE_ALL;
@@ -293,7 +362,7 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 				ret = E_DISTANCE_JUDGE_FRONT_RIGHT;
 			}
 		}
-		else if (leftFlag == true)
+		else if (m_LeftDistanceJudge == true)
 		{
 			// 前・左 壁有
 			ret = E_DISTANCE_JUDGE_FRONT_LEFT;
@@ -304,9 +373,9 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 			ret = E_DISTANCE_JUDGE_FRONT;
 		}
 	}
-	else if (rightFlag == true)
+	else if (m_RightDistanceJudge == true)
 	{
-		if (leftFlag == true)
+		if (m_LeftDistanceJudge == true)
 		{
 			// 左右 壁有
 			ret = E_DISTANCE_JUDGE_RIGHT_LEFT;
@@ -317,7 +386,7 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 			ret = E_DISTANCE_JUDGE_RIGHT;
 		}
 	}
-	else if (leftFlag == true)
+	else if (m_LeftDistanceJudge == true)
 	{
 		// 左のみ壁
 		ret = E_DISTANCE_JUDGE_LEFT;
@@ -326,20 +395,28 @@ E_DISTANCE_JUDGE_TYPE Decision::DistanceSensorCheck(std::vector<long> data)
 	return ret;
 }
 
+bool Decision::WallCheck(long judgeValue, long data)
+{
+	bool retVal = false;
+
+	if (judgeValue != 0 && data <= judgeValue)
+	{
+		retVal = true;
+	}
+
+	return retVal;
+}
+
 E_GYRO_MODE_TYPE Decision::GyroCheck()
 {
 	E_GYRO_MODE_TYPE ret = E_GYRO_MODE_FLAT;
-	double nowSlopeDegree = 0;
 
 	// ジャイロセンサの読み値取得
 	std::vector<ARC2016::Parts::GyroSensor::GyroDataStr> gyroValue;
 	m_SensorMonitor->GetGyroSensorValue(gyroValue);
 
-	// 一定以上
-	nowSlopeDegree = fabs(gyroValue[0].AngleY) / 90;
-
 	// 各状態の閾値チェック（坂道かどうか）
-	if (nowSlopeDegree > m_SlopeJudgementValue)
+	if (gyroValue.at(0).AngleY > m_SlopeJudgementValue)
 	{
 		// 坂道
 		ret = E_GYRO_MODE_SLOPE;
@@ -348,6 +425,24 @@ E_GYRO_MODE_TYPE Decision::GyroCheck()
 	{
 		// 通常
 		ret = E_GYRO_MODE_FLAT;
+	}
+
+	// 走行中のセクション判定
+	if (m_CourseSection == E_COURSE_SECTION_FIRST && ret == E_GYRO_MODE_SLOPE)
+	{
+		// 第2セクションに入ったと判定
+		m_CourseSection = E_COURSE_SECTION_SECOND;
+	}
+	else if (m_CourseSection == E_COURSE_SECTION_SECOND && ret == E_GYRO_MODE_FLAT)
+	{
+		// 第3セクションに入ったと判定
+		m_CourseSection = E_COURSE_SECTION_THIRD;
+	}
+	else if (m_CourseSection == E_COURSE_SECTION_THIRD && m_FinalSectionJudgeCount >= COURSE_SECTION_FINAL_JUDGE_TIME)
+	{
+		// 第3セクション到達後、一定時間経過によりFinalセクションと判定
+		m_CourseSection = E_COURSE_SECTION_FINAL;
+		m_FinalSectionJudgeCount = 0;
 	}
 
 	return (ret);
@@ -369,19 +464,19 @@ void Decision::setFrontMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// 左足 歩幅
-	sendBuffer[4] = 36;
+	sendBuffer[4] = LEFT_STRIDE(10);
 
 	// 右足 歩幅
-	sendBuffer[5] = 36;
+	sendBuffer[5] = RIGHT_STRIDE(10);
 
 	// 高さ
-	sendBuffer[6] = 85;
+	sendBuffer[6] = 80;
 
 	// 傾斜
-	sendBuffer[7] = SLOPE;
+	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = MOTOR_SPEED;
+	sendBuffer[8] = 255;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -404,19 +499,19 @@ void Decision::setRightMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// 左足 歩幅
-	sendBuffer[4] = 36;
+	sendBuffer[4] = LEFT_STRIDE(10);
 
 	// 右足 歩幅
-	sendBuffer[5] = 6;
+	sendBuffer[5] = RIGHT_STRIDE(1);
 
 	// 高さ
-	sendBuffer[6] = 85;
+	sendBuffer[6] = 80;
 
 	// 傾斜
-	sendBuffer[7] = SLOPE;
+	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = MOTOR_SPEED;
+	sendBuffer[8] = 255;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -439,26 +534,26 @@ void Decision::setLeftMoveCommand()
 	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
 
 	// 左足 歩幅
-	sendBuffer[4] = 6;
+	sendBuffer[4] = LEFT_STRIDE(1);
 
 	// 右足 歩幅
-	sendBuffer[5] = 36;
+	sendBuffer[5] = RIGHT_STRIDE(10);
 
 	// 高さ
-	sendBuffer[6] = 85;
+	sendBuffer[6] = 80;
 
 	// 傾斜
-	sendBuffer[7] = SLOPE;
+	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = MOTOR_SPEED;
+	sendBuffer[8] = 255;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
 	return;
 }
 
-void Decision::setStopCommand()
+void Decision::setCameraMoveCommand(char vertical)
 {
 	char sendBuffer[10] = { 0 };
 
@@ -468,11 +563,21 @@ void Decision::setStopCommand()
 
 	// 指定コマンド
 
-	// モーション停止
-	sendBuffer[2] = BUFFER3_MOTION_STOP;
+	// カメラ位置設定
+	sendBuffer[2] = BUFFER3_CAMERA_POSITION_SET;
+
+	// 未使用
+	sendBuffer[3] = 0;
+	sendBuffer[4] = 0;
+	sendBuffer[5] = 0;
+
+	// 水平角
+	sendBuffer[6] = 0;
+
+	// 垂直角
+	sendBuffer[7] = vertical;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
 	return;
 }
-

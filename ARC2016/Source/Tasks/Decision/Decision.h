@@ -34,6 +34,18 @@ typedef enum _E_GYRO_MODE_TYPE
 	E_GYRO_MODE_SLOPE,
 } E_GYRO_MODE_TYPE;
 
+typedef enum _E_COURSE_SECTION_TYPE
+{
+	E_COURSE_SECTION_FIRST = 0x00,	// 第1セクション
+	E_COURSE_SECTION_SECOND,		// 第2セクション（坂）
+	E_COURSE_SECTION_THIRD,			// 第3セクション
+	E_COURSE_SECTION_FINAL,			// 最終セクション　（第3セクション到達から一定時間経過で）
+} E_COURSE_SECTION_TYPE;
+
+#define COURSE_SECTION_FINAL_JUDGE_TIME	(300)					/* 第3セクション到達からFinalセクション到達と判定するまでの時間 */
+
+#define RIGHTLEFT_MOVE_COUNT_MAX		(10)					/* 右左折検知時に、状態を保持する最大回数 */
+
 // buffer[0]
 #define BUFFER1_TOP_FRAME				(0xFF)
 
@@ -53,8 +65,8 @@ typedef enum _E_GYRO_MODE_TYPE
 #define BUFFER4_DIRECTION_FRONT			(0)
 #define BUFFER4_DIRECTION_BACK			(1)
 
-#define MOTOR_SPEED						(5)
-#define SLOPE							(127)
+#define LEFT_STRIDE(x)					(x*12)
+#define RIGHT_STRIDE(x)				(x*12)
 
 namespace ARC2016
 {
@@ -66,6 +78,19 @@ namespace ARC2016
 			Decision(SensorMonitor* sensMonitor, DataSender* dataSender);
 			virtual ~Decision();
 
+			// センサデータから状態を判定する為の条件設定値
+			long					m_FrontDistanceJudgementValue;
+			long					m_RightDistanceJudgementValue;
+			long					m_LeftDistanceJudgementValue;
+			double					m_SlopeJudgementValue;
+
+			// カメラPos
+			char					m_CameraPosition;
+
+			// ゴール判定用
+			long					m_FrontDistanceGoalJudgementValue;
+			long					m_RightDistanceGoalJudgementValue;
+			long					m_LeftDistanceGoalJudgementValue;
 
 
 		protected:
@@ -80,11 +105,8 @@ namespace ARC2016
 			int						m_MiconHeartBeatFlag;
 			int						m_HeartBeatInterval;
 
-			// 仮
-			long					m_FlontDistanceJudgementValue;
-			long					m_RightDistanceJudgementValue;
-			long					m_LeftDistanceJudgementValue;
-			double					m_SlopeJudgementValue;
+			// Goalフラグ
+			bool					m_Goal;
 
 			ResultEnum				initialize();
 			ResultEnum				taskMain();
@@ -96,17 +118,34 @@ namespace ARC2016
 			void					ReadData();
 
 			// 動作判定関連
+			E_COURSE_SECTION_TYPE	m_CourseSection;
+			E_GYRO_MODE_TYPE		m_GyroStatus;
+			int						m_FinalSectionJudgeCount;
+			bool					m_FrontDistanceJudge;
+			bool					m_RightDistanceJudge;
+			bool					m_LeftDistanceJudge;
 			long					ConversionLineTraceFlag(long flag);
 			void				    MoveTypeDecision();
 			long					DistanceCheck(long typeLineTrace);
 			E_DISTANCE_JUDGE_TYPE	DistanceSensorCheck(std::vector<long> data);
+			bool					WallCheck(long judgeValue, long data);
 			E_GYRO_MODE_TYPE		GyroCheck();
+
+			// 右左折検知時
+			int						m_RightMoveFlag;	// 右折検知カウンタ
+			int						m_LeftMoveFlag;		// 左折検知カウンタ
+			int						m_RightMoveCount;	// 右折回数カウンタ
+			int						m_LeftMoveCount;	// 左折回数カウンタ
+			long					moveTurnRetention(long moveFlag);
+
+			// カメラ位置
+			char					m_BeforeCameraPosition;	// 同一位置へのコマンドは投げないよう保持しておく
 
 			// モーター駆動コマンド
 			void					setFrontMoveCommand();
 			void					setRightMoveCommand();
 			void					setLeftMoveCommand();
-			void					setStopCommand();
+			void					setCameraMoveCommand(char vertical);
 
 		};
 	}
