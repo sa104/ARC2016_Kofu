@@ -20,6 +20,8 @@ Decision::Decision(SensorMonitor* sensMonitor, DataSender* dataSender)
  , m_RightDistanceJudge(false)
  , m_LeftDistanceJudge(false)
  , m_Goal(false)
+ , m_CameraPosition(30)
+ , m_BeforeCameraPosition(0)
 {
 	m_SensorMonitor = sensMonitor;
 	m_DataSender = dataSender;
@@ -40,6 +42,13 @@ ResultEnum Decision::taskMain()
 
 	// マイコンとのハートビート監視
 	HeartBeatCheck();
+
+	// カメラの角度更新
+	if (m_CameraPosition != m_BeforeCameraPosition)
+	{
+		setCameraMoveCommand(m_CameraPosition);
+		m_BeforeCameraPosition = m_CameraPosition;
+	}
 
 	// カメラ & センサ情報による動作判定及び指示
 	MoveTypeDecision();
@@ -162,6 +171,9 @@ void Decision::MoveTypeDecision()
 		}
 	}
 
+	// 右左折検知後は一定回数状態を保持
+	moveIntegration = moveTurnRetention(moveIntegration);
+
 	// Motorへ指示
 	switch (moveIntegration)
 	{
@@ -169,13 +181,52 @@ void Decision::MoveTypeDecision()
 			setFrontMoveCommand();
 			break;
 		case E_MOVE_TURNLEFT:
+			if (m_LeftMoveFlag == 0)
+			{
+				m_LeftMoveFlag = 1;
+			}
 			setLeftMoveCommand();
 			break;
 		case E_MOVE_TURNRIGHT:
+			if (m_RightMoveFlag == 0)
+			{
+				m_RightMoveFlag = 1;
+			}
 			setRightMoveCommand();
 			break;
 	}
 
+}
+
+// 右左折検知後は一定回数状態を保持
+// 一定回数を超えた場合、フラグを落としカメラの指示に従う
+long Decision::moveTurnRetention(long moveFlag)
+{
+	long retVal = moveFlag;
+
+	if (m_RightMoveFlag > 0 && m_RightMoveCount < RIGHTLEFT_MOVE_COUNT_MAX)
+	{
+		retVal = E_MOVE_TURNRIGHT;
+		m_RightMoveCount++;
+	}
+	else
+	{
+		m_RightMoveFlag = 0;
+		m_RightMoveCount = 0;
+	}
+
+	if (m_LeftMoveFlag > 0 && m_LeftMoveCount < RIGHTLEFT_MOVE_COUNT_MAX)
+	{
+		retVal = E_MOVE_TURNLEFT;
+		m_LeftMoveCount++;
+	}
+	else
+	{
+		m_LeftMoveFlag = 0;
+		m_LeftMoveCount = 0;
+	}
+
+	return retVal;
 }
 
 long Decision::ConversionLineTraceFlag(long flag)
@@ -496,6 +547,35 @@ void Decision::setLeftMoveCommand()
 
 	// 速度
 	sendBuffer[8] = 255;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
+}
+
+void Decision::setCameraMoveCommand(char vertical)
+{
+	char sendBuffer[10] = { 0 };
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// カメラ位置設定
+	sendBuffer[2] = BUFFER3_CAMERA_POSITION_SET;
+
+	// 未使用
+	sendBuffer[3] = 0;
+	sendBuffer[4] = 0;
+	sendBuffer[5] = 0;
+
+	// 水平角
+	sendBuffer[6] = 0;
+
+	// 垂直角
+	sendBuffer[7] = vertical;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 

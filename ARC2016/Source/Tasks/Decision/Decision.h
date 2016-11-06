@@ -44,6 +44,8 @@ typedef enum _E_COURSE_SECTION_TYPE
 
 #define COURSE_SECTION_FINAL_JUDGE_TIME	(300)					/* 第3セクション到達からFinalセクション到達と判定するまでの時間 */
 
+#define RIGHTLEFT_MOVE_COUNT_MAX		(10)					/* 右左折検知時に、状態を保持する最大回数 */
+
 // buffer[0]
 #define BUFFER1_TOP_FRAME				(0xFF)
 
@@ -81,6 +83,9 @@ namespace ARC2016
 			long					m_RightDistanceJudgementValue;
 			long					m_LeftDistanceJudgementValue;
 			double					m_SlopeJudgementValue;
+
+			// カメラPos
+			char					m_CameraPosition;
 
 			// ゴール判定用
 			long					m_FrontDistanceGoalJudgementValue;
@@ -126,10 +131,21 @@ namespace ARC2016
 			bool					WallCheck(long judgeValue, long data);
 			E_GYRO_MODE_TYPE		GyroCheck();
 
+			// 右左折検知時
+			int						m_RightMoveFlag;	// 右折検知カウンタ
+			int						m_LeftMoveFlag;		// 左折検知カウンタ
+			int						m_RightMoveCount;	// 右折回数カウンタ
+			int						m_LeftMoveCount;	// 左折回数カウンタ
+			long					moveTurnRetention(long moveFlag);
+
+			// カメラ位置
+			char					m_BeforeCameraPosition;	// 同一位置へのコマンドは投げないよう保持しておく
+
 			// モーター駆動コマンド
 			void					setFrontMoveCommand();
 			void					setRightMoveCommand();
 			void					setLeftMoveCommand();
+			void					setCameraMoveCommand(char vertical);
 
 		};
 	}
