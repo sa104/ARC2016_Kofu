@@ -140,12 +140,15 @@ namespace ARC2016
 
 			// カメラ位置
 			char					m_BeforeCameraPosition;	// 同一位置へのコマンドは投げないよう保持しておく
+			DataSender::E_COMMAND_DATA_SEND_TYPE m_CommandStatus;	// カメラ駆動コマンド実行時は、モータへのコマンドで書きつぶさないように完了を待たせる
 
 			// モーター駆動コマンド
 			void					setFrontMoveCommand();
 			void					setRightMoveCommand();
 			void					setLeftMoveCommand();
 			void					setCameraMoveCommand(char vertical);
+
+			void					delayCommandSend();	// カメラコマンドを実行した場合の、モータコマンド格納前のDelay関数
 
 		};
 	}

@@ -43,16 +43,22 @@ ResultEnum Decision::taskMain()
 	// マイコンとのハートビート監視
 	HeartBeatCheck();
 
-	// カメラの角度更新
 	if (m_CameraPosition != m_BeforeCameraPosition)
 	{
+		// カメラの角度更新
+		m_DataSender->SetCommandSendStatus(DataSender::E_COMMAND_DATA_NOT_SEND);
+		m_CommandStatus = DataSender::E_COMMAND_DATA_NOT_SEND;
 		setCameraMoveCommand(m_CameraPosition);
 		m_BeforeCameraPosition = m_CameraPosition;
+	}
+	else
+	{
+		m_CommandStatus = DataSender::E_COMMAND_DATA_NONE;
 	}
 
 	// カメラ & センサ情報による動作判定及び指示
 	MoveTypeDecision();
-
+	
 	return E_RET_NORMAL;
 }
 
@@ -452,6 +458,9 @@ void Decision::setFrontMoveCommand()
 {
 	char sendBuffer[10] = { 0 };
 
+	// カメラ駆動実施時の完了待ち処理
+	delayCommandSend();
+
 	// 先頭フレーム
 	sendBuffer[0] = BUFFER1_TOP_FRAME;
 	sendBuffer[1] = BUFFER2_SECOND_FRAME;
@@ -487,6 +496,9 @@ void Decision::setRightMoveCommand()
 {
 	char sendBuffer[10] = { 0 };
 
+	// カメラ駆動実施時の完了待ち処理
+	delayCommandSend();
+
 	// 先頭フレーム
 	sendBuffer[0] = BUFFER1_TOP_FRAME;
 	sendBuffer[1] = BUFFER2_SECOND_FRAME;
@@ -521,6 +533,9 @@ void Decision::setRightMoveCommand()
 void Decision::setLeftMoveCommand()
 {
 	char sendBuffer[10] = { 0 };
+
+	// カメラ駆動実施時の完了待ち処理
+	delayCommandSend();
 
 	// 先頭フレーム
 	sendBuffer[0] = BUFFER1_TOP_FRAME;
@@ -580,4 +595,15 @@ void Decision::setCameraMoveCommand(char vertical)
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
 	return;
+}
+
+void Decision::delayCommandSend()
+{
+	DataSender::E_COMMAND_DATA_SEND_TYPE flag = m_DataSender->CommandSendStatusCheck();
+
+	while (flag == DataSender::E_COMMAND_DATA_NOT_SEND)
+	{
+		std::this_thread::sleep_for(std::chrono::microseconds(50));
+		flag = m_DataSender->CommandSendStatusCheck();
+	}
 }

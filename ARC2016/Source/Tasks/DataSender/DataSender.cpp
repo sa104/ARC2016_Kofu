@@ -19,6 +19,8 @@ DataSender::DataSender(Serial* device)
 	m_MyHeartBeat = HEARTBEAT_OFF;
 	m_BoardHeartBeat = HEARTBEAT_OFF;
 	m_IsMoveSetted = false;
+
+	sendStatus = E_COMMAND_DATA_NONE;
 }
 
 DataSender::~DataSender()
@@ -93,6 +95,7 @@ ResultEnum DataSender::sendData(unsigned char *sendBuffer, const long size)
 	retVal = E_RET_NORMAL;
 
 FINISH:
+	sendStatus = E_COMMAND_DATA_SEND;	// ³íI—¹‚©‚Ç‚¤‚©‚Í‚±‚ÌÛ‹C‚É‚µ‚È‚¢
 	return retVal;
 }
 
@@ -110,4 +113,14 @@ ResultEnum DataSender::readData(unsigned char *receiveBuffer, const long size)
 	retVal = m_SerialDevice->Receive(&receiveBuffer[0], size);
 
 	return retVal;
+}
+
+DataSender::E_COMMAND_DATA_SEND_TYPE DataSender::CommandSendStatusCheck()
+{
+	return sendStatus;
+}
+
+void DataSender::SetCommandSendStatus(DataSender::E_COMMAND_DATA_SEND_TYPE flag)
+{
+	sendStatus = flag;
 }
