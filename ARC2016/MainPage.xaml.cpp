@@ -83,11 +83,11 @@ void ARC2016::MainPage::InitializeCamera()
 			m_PreviewHeight = (int)previewProperty->Height;
 
 			m_CameraTimer = ref new DispatcherTimer();
-			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Camera);
-
 			TimeSpan t;
-			t.Duration = CAMERRA_DURATION;
+			t.Duration = 200;
 			m_CameraTimer->Interval = t;
+
+			m_CameraTimer->Tick += ref new Windows::Foundation::EventHandler<Object^>(this, &ARC2016::MainPage::timer_Camera);
 			m_CameraTimer->Start();
 		});
 	});
@@ -242,9 +242,10 @@ FINISH:
 
 void ARC2016::MainPage::InitializeDecision()
 {
-	if (m_SensorMonitor == nullptr
-	|| m_DataSender == nullptr
-	|| m_Decision != nullptr)
+	bool isSimulation = (bool)chkSensorSimulation->IsChecked->Value;
+
+	if (m_DataSender == nullptr
+	||	m_Decision != nullptr)
 	{
 		goto FINISH;
 	}
@@ -304,7 +305,7 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 			lData = std::stol(ws1);
 		}
 
-		ChangeBinaryThresh(lData);
+		ChangeBinaryThresh(lData);		
 
 		bool isChecked = (bool)ChkDisplay->IsChecked->Value;
 		if (isChecked == true)
@@ -319,7 +320,6 @@ void ARC2016::MainPage::timer_Camera(Platform::Object^ sender, Platform::Object^
 
 		m_CameraTimer->Start();
 	});
-
 }
 
 void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::Object^ e)
@@ -355,21 +355,22 @@ void ARC2016::MainPage::timer_SensorMonitor(Platform::Object^ sender, Platform::
 	InitializeDataSender();
 	InitializeDecision();
 
-	if (m_DataSender != nullptr)
-	{
-		unsigned char sendBuffer[10] = { 0 };
+	// 強制出力デバッグ
+	//if (m_DataSender != nullptr)
+	//{
+	//	unsigned char sendBuffer[10] = { 0 };
 
-		sendBuffer[0] = BUFFER1_TOP_FRAME;
-		sendBuffer[1] = BUFFER2_SECOND_FRAME;
-		sendBuffer[2] = BUFFER3_MOTION_PLAY;
-		sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
-		sendBuffer[4] = 36;
-		sendBuffer[5] = 36;
-		sendBuffer[6] = 85;
-		sendBuffer[7] = 0;
-		sendBuffer[8] = 26;
-		memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
-	}
+	//	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	//	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+	//	sendBuffer[2] = BUFFER3_MOTION_PLAY;
+	//	sendBuffer[3] = BUFFER4_DIRECTION_FRONT;
+	//	sendBuffer[4] = 36;
+	//	sendBuffer[5] = 36;
+	//	sendBuffer[6] = 85;
+	//	sendBuffer[7] = 0;
+	//	sendBuffer[8] = 3;
+	//	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+	//}
 
 
 }

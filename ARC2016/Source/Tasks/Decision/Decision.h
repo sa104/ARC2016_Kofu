@@ -106,6 +106,7 @@ namespace ARC2016
 			void					setFrontMoveCommand();
 			void					setRightMoveCommand();
 			void					setLeftMoveCommand();
+			void					setStopCommand();
 
 		};
 	}

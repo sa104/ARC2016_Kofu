@@ -9,7 +9,7 @@ using namespace Windows::Foundation;
 using namespace Windows::System;
 
 Decision::Decision(SensorMonitor* sensMonitor, DataSender* dataSender)
- : TaskBase("Decision", 100)
+ : TaskBase("Decision", 1000)
  , m_SendFlag(0)
  , m_MyHeartBeatFlag(0)
 {
@@ -134,25 +134,32 @@ void Decision::MoveTypeDecision()
 	long moveFlag = GetMoveType();
 	long moveLineTrace = ConversionLineTraceFlag(moveFlag);
 
-	// 距離センサ状況とライントレース結果により動作決定
-	long moveIntegration = DistanceCheck(moveLineTrace);
-
-	// ジャイロセンサ状況確認
-	E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
-
-	// Motorへ指示
-	switch (moveLineTrace)
+	if (m_SensorMonitor != nullptr)
 	{
-		case E_MOVE_STRAIGHT:
-			setFrontMoveCommand();
-			break;
-		case E_MOVE_TURNLEFT:
-			setLeftMoveCommand();
-			break;
-		case E_MOVE_TURNRIGHT:
-			setRightMoveCommand();
-			break;
+		// 距離センサ状況とライントレース結果により動作決定
+		long moveIntegration = DistanceCheck(moveLineTrace);
+
+		// ジャイロセンサ状況確認
+		E_GYRO_MODE_TYPE gyroFlag = GyroCheck();
 	}
+
+	setFrontMoveCommand();
+	// Motorへ指示
+	//switch (moveLineTrace)
+	//{
+	//	case E_MOVE_STRAIGHT:
+	//		setFrontMoveCommand();
+	//		break;
+	//	case E_MOVE_TURNLEFT:
+	//		setLeftMoveCommand();
+	//		break;
+	//	case E_MOVE_TURNRIGHT:
+	//		setRightMoveCommand();
+	//		break;
+	//	case E_MOVE_UNKNOWN:
+	//		setStopCommand();
+	//		break;
+	//}
 
 }
 
@@ -163,23 +170,23 @@ long Decision::ConversionLineTraceFlag(long flag)
 	switch (flag)
 	{
 	case PATTERN_FRONT:
-		retVal = E_MOVE_STRAIGHT;
-		break;
 	case PATTERN_FRONT_LEFT_15:              // 前進＆左 15°
 	case PATTERN_FRONT_LEFT_30:              // 前進＆左 30°
 	case PATTERN_FRONT_LEFT_45:              // 前進＆左 45°
-	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
 	case PATTERN_TURN_LEFT_ONCE:             // 左旋回 単体 (15°)
 	case PATTERN_TURN_LEFT_45:               // 左旋回 45°
-	case PATTERN_TURN_LEFT_90:               // 左旋回 90°
-		retVal = E_MOVE_TURNLEFT;
-		break;
 	case PATTERN_FRONT_RIGHT_15:             // 前進＆右 15°
 	case PATTERN_FRONT_RIGHT_30:             // 前進＆右 30°
 	case PATTERN_FRONT_RIGHT_45:             // 前進＆右 45°
-	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
 	case PATTERN_TURN_RIGHT_ONCE:            // 右旋回 単体 (15°)
 	case PATTERN_TURN_RIGHT_45:              // 右旋回 45°
+		retVal = E_MOVE_STRAIGHT;
+		break;
+	case PATTERN_FRONT_LEFT_90:              // 前進＆左 90°
+	case PATTERN_TURN_LEFT_90:               // 左旋回 90°
+		retVal = E_MOVE_TURNLEFT;
+		break;
+	case PATTERN_FRONT_RIGHT_90:             // 前進＆右 90°
 	case PATTERN_TURN_RIGHT_90:              // 右旋回 90°
 		retVal = E_MOVE_TURNRIGHT;
 		break;
@@ -375,7 +382,7 @@ void Decision::setFrontMoveCommand()
 	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = 13;
+	sendBuffer[8] = 3;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -410,7 +417,7 @@ void Decision::setRightMoveCommand()
 	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = 13;
+	sendBuffer[8] = 3;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
@@ -445,9 +452,28 @@ void Decision::setLeftMoveCommand()
 	sendBuffer[7] = 0;
 
 	// 速度
-	sendBuffer[8] = 13;
+	sendBuffer[8] = 3;
 
 	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
 
 	return;
 }
+
+void Decision::setStopCommand()
+{
+	char sendBuffer[10] = { 0 };
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// モーション停止
+	sendBuffer[2] = BUFFER3_MOTION_STOP;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
+}
+

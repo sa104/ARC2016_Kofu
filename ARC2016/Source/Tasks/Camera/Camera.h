@@ -29,9 +29,8 @@ using namespace Windows::UI::Xaml::Media::Imaging;
 #define C_DATALINE_VERTICAL_MAX	(5)
 #define C_LINE_ORIGIN			(SCREEN_WIDTH/2)
 #define	C_LINE_WIDTH			(80)
-#define C_LINE_MAXDAVIATION		(120)
-#define C_CORNER_MAX			(5)
-#define C_BINARY_THRESH_DEFAULT     (100)
+#define C_LINE_MAXDAVIATION		(140)
+#define C_CORNER_MAX			(4)
 #define C_CAMERA_LOWANGLE_THRESHOLD (120)
 
 

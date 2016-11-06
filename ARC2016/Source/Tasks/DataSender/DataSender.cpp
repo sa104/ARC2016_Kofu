@@ -6,13 +6,14 @@ using namespace ARC2016::Framework;
 using namespace ARC2016::Tasks;
 
 DataSender::DataSender(Serial* device)
- : TaskBase("DataSender", 100)
+ : TaskBase("DataSender", 1000)
  , m_SerialDevice(device)
 {
 	for (int i = 0; i < 10; i++)
 	{
 		m_HeartBeatSendBuffer[i] = 0;
 		m_MotorMoveSendBuffer[i] = 0;
+		m_MotorSendedBuffer[i] = 0;
 	}
 	m_SendFlag = HEARTBEAT_SEND_START;
 	m_MyHeartBeat = HEARTBEAT_OFF;
@@ -66,12 +67,15 @@ ResultEnum DataSender::sendData(unsigned char *sendBuffer, const long size)
 	ResultEnum retVal = E_RET_ABNORMAL;
 	ResultEnum result = E_RET_ABNORMAL;
 
-	if (sendBuffer[0] != 0)
+	
+	if ((sendBuffer[0] != 0) && (memcmp(m_MotorSendedBuffer, sendBuffer, 10) != 0))
 	{
 		// データ送信
 		result = m_SerialDevice->Send(&sendBuffer[0], size);
 		if (result == E_RET_NORMAL)
 		{
+			memcpy(m_MotorSendedBuffer, sendBuffer, 10);
+
 			// 送信したのでデータクリア
 			for (int count = 0; count < size; ++count)
 

@@ -45,7 +45,7 @@ void Serial::Initialize()
 
 			m_SerialPort->WriteTimeout = t;
 			m_SerialPort->ReadTimeout = t;
-			m_SerialPort->BaudRate = 112500;
+			m_SerialPort->BaudRate = 19200;
 			m_SerialPort->Parity = SerialParity::None;
 			m_SerialPort->StopBits = SerialStopBitCount::One;
 			m_SerialPort->DataBits = 8;

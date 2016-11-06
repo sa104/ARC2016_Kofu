@@ -35,6 +35,7 @@ namespace ARC2016
 
 			unsigned char m_MotorMoveSendBuffer[10];
 			unsigned char m_MotorMoveReceiveBuffer[10];
+			unsigned char m_MotorSendedBuffer[10];
 			bool m_IsMoveSetted;
 
 		protected :
