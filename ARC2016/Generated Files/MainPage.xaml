@@ -10,18 +10,34 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <CaptureElement x:ConnectionId='1' x:Name="ImgCamera" HorizontalAlignment="Left" Height="240" Margin="30,240,0,0" VerticalAlignment="Top" Width="320"                           Visibility="Collapsed"/>
         <Image x:ConnectionId='2' x:Name="ImgCapture" HorizontalAlignment="Left" Height="240" VerticalAlignment="Top" Width="320" Margin="30,0,0,0"/>
-        <CheckBox x:ConnectionId='3' x:Name="ChkDisplay" Content="Display" HorizontalAlignment="Left" Height="24" Margin="676,27,0,0" VerticalAlignment="Top" Width="153"/>
+        <CheckBox x:ConnectionId='3' x:Name="ChkDisplay" Content="Display" HorizontalAlignment="Left" Height="24" Margin="676,27,0,0" VerticalAlignment="Top" Width="153" IsChecked="False"/>
         <Button x:ConnectionId='4' x:Name="btnShutdown" Content="Shutdown" HorizontalAlignment="Left" Height="43" Margin="676,437,0,0" VerticalAlignment="Top" Width="112"                          />
-        <TextBox x:ConnectionId='5' x:Name="txtDistance1" HorizontalAlignment="Left" Height="10" Margin="190,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='6' x:Name="txtDistance2" HorizontalAlignment="Left" Height="10" Margin="190,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <Button x:ConnectionId='7' x:Name="btnSensor" Content="Sensor" HorizontalAlignment="Left" Height="38" Margin="50,240,0,0" VerticalAlignment="Top" Width="112"                        />
-        <CheckBox x:ConnectionId='8' x:Name="chkSensorSimulation" Content="Simulation&#xD;&#xA;" HorizontalAlignment="Left" Height="19" Margin="50,280,0,0" VerticalAlignment="Top" Width="67" IsChecked="True"/>
-        <TextBox x:ConnectionId='9' x:Name="txtAccelX" HorizontalAlignment="Left" Height="10" Margin="355,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='10' x:Name="txtAccelY" HorizontalAlignment="Left" Height="10" Margin="355,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='11' x:Name="txtAccelZ" HorizontalAlignment="Left" Height="10" Margin="355,320,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='12' x:Name="txtAngleX" HorizontalAlignment="Left" Height="10" Margin="491,240,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='13' x:Name="txtAngleY" HorizontalAlignment="Left" Height="10" Margin="491,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
-        <TextBox x:ConnectionId='14' x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,100,0,0" TextWrapping="Wrap" Text="60" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBlock x:ConnectionId='5' x:Name="Distance1" HorizontalAlignment="Left" Margin="190,240,0,0" Text="Distance1"  Width="100" />
+        <TextBox x:ConnectionId='6' x:Name="txtDistance1" HorizontalAlignment="Left" Height="10" Margin="190,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='7' x:Name="Distance2" HorizontalAlignment="Left" Margin="190,320,0,0" Text="Distance2"  Width="100" />
+        <TextBox x:ConnectionId='8' x:Name="txtDistance2" HorizontalAlignment="Left" Height="10" Margin="190,360,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <Button x:ConnectionId='9' x:Name="btnSensor" Content="Sensor" HorizontalAlignment="Left" Height="38" Margin="50,240,0,0" VerticalAlignment="Top" Width="112"                        />
+        <CheckBox x:ConnectionId='10' x:Name="chkSensorSimulation" Content="Simulation&#xD;&#xA;" HorizontalAlignment="Left" Height="19" Margin="50,280,0,0" VerticalAlignment="Top" Width="67" IsChecked="False"/>
+        <TextBlock x:ConnectionId='11' x:Name="AccelX" HorizontalAlignment="Left" Margin="355,240,0,0" Text="AccelX"  Width="100" />
+        <TextBox x:ConnectionId='12' x:Name="txtAccelX" HorizontalAlignment="Left" Height="10" Margin="355,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='13' x:Name="AccelY" HorizontalAlignment="Left" Margin="355,320,0,0" Text="AccelY"  Width="100" />
+        <TextBox x:ConnectionId='14' x:Name="txtAccelY" HorizontalAlignment="Left" Height="10" Margin="355,360,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='15' x:Name="AccelZ" HorizontalAlignment="Left" Margin="355,400,0,0" Text="AccelZ"  Width="100" />
+        <TextBox x:ConnectionId='16' x:Name="txtAccelZ" HorizontalAlignment="Left" Height="10" Margin="355,440,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='17' x:Name="AngleX" HorizontalAlignment="Left" Margin="491,240,0,0" Text="AngleX"  Width="100" />
+        <TextBox x:ConnectionId='18' x:Name="txtAngleX" HorizontalAlignment="Left" Height="10" Margin="491,280,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='19' x:Name="AngleY" HorizontalAlignment="Left" Margin="355,320,0,0" Text="AngleY"  Width="100" />
+        <TextBox x:ConnectionId='20' x:Name="txtAngleY" HorizontalAlignment="Left" Height="10" Margin="491,360,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="True"/>
+        <TextBlock x:ConnectionId='21' x:Name="Threshold" HorizontalAlignment="Left" Margin="600,100,0,0" Text="Threshold"  Width="100" />
+        <TextBox x:ConnectionId='22' x:Name="txtBinaryThreshold" HorizontalAlignment="Left" Height="10" Margin="600,130,0,0" TextWrapping="Wrap" Text="65" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBlock x:ConnectionId='23' x:Name="CameraAlive" HorizontalAlignment="Left" Margin="600,160,0,0" Text="CameraAlive"  Width="100" />
+        <TextBox x:ConnectionId='24' x:Name="txtCameraAlive" HorizontalAlignment="Left" Height="10" Margin="600,190,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBlock x:ConnectionId='25' x:Name="Target" HorizontalAlignment="Left" Margin="600,220,0,0" Text="Target"  Width="100" />
+        <TextBox x:ConnectionId='26' x:Name="txtTarget" HorizontalAlignment="Left" Height="10" Margin="600,250,0,0" TextWrapping="Wrap" Text="Non" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBlock x:ConnectionId='27' x:Name="Duration" HorizontalAlignment="Left" Margin="730,100,0,0" Text="Duration"  Width="100" />
+        <TextBox x:ConnectionId='28' x:Name="txtCameraDuration" HorizontalAlignment="Left" Height="10" Margin="730,130,0,0" TextWrapping="Wrap" Text="300" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
+        <TextBlock x:ConnectionId='29' x:Name="CornerIndex" HorizontalAlignment="Left" Margin="730,160,0,0" Text="CornerIndex"  Width="100" />
+        <TextBox x:ConnectionId='30' x:Name="txtCornerIndex" HorizontalAlignment="Left" Height="10" Margin="730,290,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="131" IsReadOnly="False"/>
     </Grid>
 </Page>
 

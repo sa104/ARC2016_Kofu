@@ -53,54 +53,134 @@ void ::ARC2016::MainPage::Connect(int __connectionId, ::Platform::Object^ __targ
             break;
         case 5:
             {
-                this->txtDistance1 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->Distance1 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
             }
             break;
         case 6:
             {
-                this->txtDistance2 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->txtDistance1 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
         case 7:
+            {
+                this->Distance2 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 8:
+            {
+                this->txtDistance2 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 9:
             {
                 this->btnSensor = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
                 (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->btnSensor))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::ARC2016::MainPage::*)
                     (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::btnSensor_Click);
             }
             break;
-        case 8:
+        case 10:
             {
                 this->chkSensorSimulation = safe_cast<::Windows::UI::Xaml::Controls::CheckBox^>(__target);
             }
             break;
-        case 9:
-            {
-                this->txtAccelX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
-            }
-            break;
-        case 10:
-            {
-                this->txtAccelY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
-            }
-            break;
         case 11:
             {
-                this->txtAccelZ = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->AccelX = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
             }
             break;
         case 12:
             {
-                this->txtAngleX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->txtAccelX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
         case 13:
             {
-                this->txtAngleY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->AccelY = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
             }
             break;
         case 14:
             {
+                this->txtAccelY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 15:
+            {
+                this->AccelZ = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 16:
+            {
+                this->txtAccelZ = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 17:
+            {
+                this->AngleX = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 18:
+            {
+                this->txtAngleX = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 19:
+            {
+                this->AngleY = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 20:
+            {
+                this->txtAngleY = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 21:
+            {
+                this->Threshold = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 22:
+            {
                 this->txtBinaryThreshold = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 23:
+            {
+                this->CameraAlive = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 24:
+            {
+                this->txtCameraAlive = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 25:
+            {
+                this->Target = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 26:
+            {
+                this->txtTarget = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 27:
+            {
+                this->Duration = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 28:
+            {
+                this->txtCameraDuration = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            }
+            break;
+        case 29:
+            {
+                this->CornerIndex = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            }
+            break;
+        case 30:
+            {
+                this->txtCornerIndex = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
             }
             break;
     }

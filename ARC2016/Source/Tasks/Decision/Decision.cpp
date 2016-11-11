@@ -200,6 +200,9 @@ void Decision::MoveTypeDecision()
 			}
 			setRightMoveCommand();
 			break;
+		case E_MOVE_UNKNOWN:
+			setBackMoveCommand();
+			break;
 	}
 
 }
@@ -550,6 +553,44 @@ void Decision::setLeftMoveCommand()
 
 	// 左足 歩幅
 	sendBuffer[4] = LEFT_STRIDE(1);
+
+	// 右足 歩幅
+	sendBuffer[5] = RIGHT_STRIDE(10);
+
+	// 高さ
+	sendBuffer[6] = 80;
+
+	// 傾斜
+	sendBuffer[7] = 0;
+
+	// 速度
+	sendBuffer[8] = 255;
+
+	memcpy(m_DataSender->m_MotorMoveSendBuffer, sendBuffer, sizeof(sendBuffer));
+
+	return;
+}
+
+void Decision::setBackMoveCommand()
+{
+	char sendBuffer[10] = { 0 };
+
+	// カメラ駆動実施時の完了待ち処理
+	delayCommandSend();
+
+	// 先頭フレーム
+	sendBuffer[0] = BUFFER1_TOP_FRAME;
+	sendBuffer[1] = BUFFER2_SECOND_FRAME;
+
+	// 指定コマンド
+
+	// モーション再生
+	sendBuffer[2] = BUFFER3_MOTION_PLAY;
+	// 後退
+	sendBuffer[3] = BUFFER4_DIRECTION_BACK;
+
+	// 左足 歩幅
+	sendBuffer[4] = LEFT_STRIDE(10);
 
 	// 右足 歩幅
 	sendBuffer[5] = RIGHT_STRIDE(10);

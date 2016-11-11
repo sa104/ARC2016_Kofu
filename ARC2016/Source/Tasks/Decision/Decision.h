@@ -146,6 +146,7 @@ namespace ARC2016
 			void					setFrontMoveCommand();
 			void					setRightMoveCommand();
 			void					setLeftMoveCommand();
+			void					setBackMoveCommand();
 			void					setCameraMoveCommand(char vertical);
 
 			void					delayCommandSend();	// カメラコマンドを実行した場合の、モータコマンド格納前のDelay関数
